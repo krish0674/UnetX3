@@ -81,7 +81,7 @@ def train(epochs, batch_size, hr_dir, tar_dir, hr_val_dir, tar_val_dir, encoder=
     )
     valid_epoch = ValidEpoch(
         model, 
-        loss=lossX3, 
+        loss=loss, 
         metrics=metrics, 
         device=device,
         verbose=True,
