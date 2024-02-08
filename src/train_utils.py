@@ -204,7 +204,7 @@ class TrainEpoch(Epoch):
 
     def batch_update(self, x, y):
         self.optimizer.zero_grad()
-        print(x.shape)
+        # print(x.shape)
         prediction_a, prediction_b, prediction_c = self.model(x)
         loss = self.loss(prediction_a, prediction_b, prediction_c, y)
         loss.backward()
