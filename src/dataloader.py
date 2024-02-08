@@ -79,7 +79,7 @@ class Dataset(Dataset):
         mask_path = self.mask_paths[index]
 
         image = Image.open(image_path).convert("RGB")
-        mask = Image.open(mask_path).convert("L") 
+        mask = Image.open(mask_path).convert("RGB") 
 
         if self.transform is not None:
             image = self.transform(image)
