@@ -1,5 +1,5 @@
 import argparse
-from .src.trainer import train_model
+from src.trainer import train_model
 import wandb
 
 def main(args):
