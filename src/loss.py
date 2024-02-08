@@ -84,15 +84,15 @@ class custom_lossv(base.Loss):
         return x +y/10 + p/10
         # return x+p/10+y/10  OG
     
-    class lossX3(base.Loss):
-        def __init__(self):
-            super().__init__()
-            self.mse=nn.MSELoss()
-        def forward(self,img1,img2,img3,gt):
-            x=self.mse(img1,gt)
-            y=self.mse(img2,gt)
-            z=self.mse(img3,gt)
+class lossX3(base.Loss):
+    def __init__(self):
+        super().__init__()
+        self.mse=nn.MSELoss()
+    def forward(self,img1,img2,img3,gt):
+        x=self.mse(img1,gt)
+        y=self.mse(img2,gt)
+        z=self.mse(img3,gt)
 
-            return 0.15*x+0.25*y+0.6*z
+        return 0.15*x+0.25*y+0.6*z
 
         
