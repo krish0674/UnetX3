@@ -25,7 +25,7 @@ class Dataset(BaseDataset):
         
         # read data
         himage = cv2.imread(self.hr_list[i])
-        himage = cv2.cvtColor(himage, cv2.COLOR_BGR2RGB)
+        # himage = cv2.cvtColor(himage, cv2.COLOR_BGR2RGB)
         target = cv2.imread(self.tar_list[i], 0)
         #timage = cv2.imread(self.thermal_list[i])
         # apply augmentations
@@ -45,7 +45,7 @@ class Dataset(BaseDataset):
             target = self.transform(target)
             target = target/255
             target = normalize_data(target)
-            
+
         return himage,target #target#, label
         
     def __len__(self):
