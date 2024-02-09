@@ -11,6 +11,7 @@ class Dataset(BaseDataset):
             tar_dir: str, 
             augmentation=None, 
             preprocessing=None,
+            transform=None
     ):
         self.hr_list = list_img(hr_dir)
         #self.thermal_list= list_img(thermal_dir)
@@ -18,7 +19,8 @@ class Dataset(BaseDataset):
         
         self.augmentation = augmentation
         self.preprocessing = preprocessing
-    
+        self.transform=transform
+
     def __getitem__(self, i):
         
         # read data
@@ -32,14 +34,16 @@ class Dataset(BaseDataset):
         #     himage, target= sample['image'], sample['mask']
         # target = target.reshape(480,640,1)
 #         timage = timage.reshape(480,640,1)
-        if self.preprocessing:
-            sample = self.preprocessing(image=himage, mask=target)
-            himage, target = sample['image'], sample['mask']
+        if self.transform:
+            #sample = self.preprocessing(image=himage, mask=target)
+            #himage, target = sample['image'], sample['mask']
            # sample = self.preprocessing(image=timage)
            # timage= sample['image']
            # sample = self.preprocessing
-            target = target/255
-            target = normalize_data(target)
+            # target = target/255
+            # target = normalize_data(target)
+            himage = self.transform(himage)
+            target = self.transform(target)
         return himage,target #target#, label
         
     def __len__(self):
