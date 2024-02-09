@@ -23,38 +23,38 @@ def train(epochs, batch_size, hr_dir, tar_dir, hr_val_dir, tar_val_dir, encoder=
 
     preprocessing_fn = smp.encoders.get_preprocessing_fn(encoder, encoder_weights)
 
-    # train_dataset = Dataset(
-    #     hr_dir,
-    #     tar_dir,
-    #     augmentation=get_training_augmentation(), 
-    #     preprocessing=get_preprocessing(preprocessing_fn)
-    # )
-    # valid_dataset = Dataset(
-    #     hr_val_dir,
-    #     tar_val_dir,
-    #     augmentation=get_validation_augmentation(), 
-    #     preprocessing=get_preprocessing(preprocessing_fn)
-    # )
-    # train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
-    # valid_loader = DataLoader(valid_dataset, batch_size=batch_size, shuffle=True)#, drop_last=True)
+    train_dataset = Dataset(
+        hr_dir,
+        tar_dir,
+        augmentation=get_training_augmentation(), 
+        preprocessing=get_preprocessing(preprocessing_fn)
+    )
+    valid_dataset = Dataset(
+        hr_val_dir,
+        tar_val_dir,
+        augmentation=get_validation_augmentation(), 
+        preprocessing=get_preprocessing(preprocessing_fn)
+    )
+    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+    valid_loader = DataLoader(valid_dataset, batch_size=batch_size, shuffle=True)#, drop_last=True)
 
     # loss = custom_loss(batch_size, beta=beta)
     # lossV = custom_lossv()
-    transform = transforms.Compose([
-        transforms.Resize((256, 256)),
-        transforms.ToTensor(),
-    ])
-    image_paths, mask_paths = list_image_paths(hr_dir)
+    # transform = transforms.Compose([
+    #     transforms.Resize((256, 256)),
+    #     transforms.ToTensor(),
+    # ])
+    # image_paths, mask_paths = list_image_paths(hr_dir)
 
-    train_dataset = Dataset(image_paths, mask_paths, transform=transform)
+    # train_dataset = Dataset(image_paths, mask_paths, transform=transform)
 
-    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+    # train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
     
-    image_paths1, mask_paths1 = list_image_paths(hr_val_dir)
+    # image_paths1, mask_paths1 = list_image_paths(hr_val_dir)
 
-    val_dataset = Dataset(image_paths1, mask_paths1, transform=transform)
+    # val_dataset = Dataset(image_paths1, mask_paths1, transform=transform)
 
-    valid_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=True)
+    # valid_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=True)
 
     loss=lossX3()
 
