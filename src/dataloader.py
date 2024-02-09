@@ -2,7 +2,7 @@ from torch.utils.data import DataLoader
 from torch.utils.data import Dataset as BaseDataset
 import cv2
 from .misc import normalize_data, list_img
-
+from PIL import Image
 class Dataset(BaseDataset):  
     def __init__(
             self, 
@@ -27,6 +27,8 @@ class Dataset(BaseDataset):
         himage = cv2.imread(self.hr_list[i])
         # himage = cv2.cvtColor(himage, cv2.COLOR_BGR2RGB)
         target = cv2.imread(self.tar_list[i], 0)
+        himage = Image.fromarray(himage)
+        target = Image.fromarray(target)
         #timage = cv2.imread(self.thermal_list[i])
         # apply augmentations
         # if self.augmentation:
