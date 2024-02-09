@@ -27,20 +27,20 @@ class Dataset(BaseDataset):
         target = cv2.imread(self.tar_list[i], 0)
         #timage = cv2.imread(self.thermal_list[i])
         # apply augmentations
-        if self.augmentation:
-            sample = self.augmentation(image=himage,image1=timage, mask=target)
-            himage, target, timage= sample['image'], sample['mask'], sample['image1']
-        target = target.reshape(480,640,1)
+        # if self.augmentation:
+        #     sample = self.augmentation(image=himage,mask=target)
+        #     himage, target= sample['image'], sample['mask']
+        # target = target.reshape(480,640,1)
 #         timage = timage.reshape(480,640,1)
         if self.preprocessing:
             sample = self.preprocessing(image=himage, mask=target)
             himage, target = sample['image'], sample['mask']
-            sample = self.preprocessing(image=timage)
-            timage= sample['image']
-            sample = self.preprocessing
+           # sample = self.preprocessing(image=timage)
+           # timage= sample['image']
+           # sample = self.preprocessing
             target = target/255
             target = normalize_data(target)
-        return himage,timage, #target#, label
+        return himage,target #target#, label
         
     def __len__(self):
         return len(self.hr_list)
