@@ -40,10 +40,12 @@ class Dataset(BaseDataset):
            # sample = self.preprocessing(image=timage)
            # timage= sample['image']
            # sample = self.preprocessing
-            # target = target/255
-            # target = normalize_data(target)
+            
             himage = self.transform(himage)
             target = self.transform(target)
+            target = target/255
+            target = normalize_data(target)
+            
         return himage,target #target#, label
         
     def __len__(self):
