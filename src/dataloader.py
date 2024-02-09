@@ -26,10 +26,11 @@ class Dataset(BaseDataset):
     def __getitem__(self, i):
         
         # read data
-        himage = torch.ToTensor(cv2.imread(self.hr_list[i],0))
-        # himage = cv2.cvtColor(himage, cv2.COLOR_BGR2RGB)
-        target = torch.ToTensor(cv2.imread(self.tar_list[i], 0))
+        himage = cv2.imread(self.hr_list[i], cv2.IMREAD_GRAYSCALE)
+        target = cv2.imread(self.tar_list[i], cv2.IMREAD_GRAYSCALE)
         
+        himage = Image.fromarray(himage)
+        target = Image.fromarray(target)
         #timage = cv2.imread(self.thermal_list[i])
         # apply augmentations
         # if self.augmentation:
