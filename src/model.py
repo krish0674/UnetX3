@@ -173,12 +173,12 @@ class UnetX3(torch.nn.Module):
     def __init__(self,activation, encoder_name,encoder_weights,input_channels=1, output_channels=1):
         super(UnetX3, self).__init__()
         self.model = smp.Unet(
-            encoder_depth=7,
+            # encoder_depth=7,
             activation=activation,
             encoder_name=encoder_name,  
             encoder_weights=encoder_weights,  
             in_channels=input_channels, 
-            decoder_channels=(64,32,16,8,4,2,1) 
+            decoder_channels=(16,8,4,2,1) 
            # classes=output_channels,  
         )
 
