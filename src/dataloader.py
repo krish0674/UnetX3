@@ -42,8 +42,8 @@ class Dataset(BaseDataset):
             
             target = target/255
             target = normalize_data(target)
-            print(target.shape)
-            print(himage.shape)
+            # print(target.shape)
+            # print(himage.shape)
 
 
         return himage,target #target#, label
