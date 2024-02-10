@@ -1,5 +1,5 @@
 import albumentations as albu
-
+import numpy as np
 def get_training_augmentation():
     train_transform = [
         albu.Resize(480,640,always_apply=True),
@@ -57,7 +57,7 @@ def to_tensor(x, **kwargs):
         # For a 3D array (already has channels), transpose from (H, W, C) to (C, H, W)
         x = x.transpose(2, 0, 1).astype('float32')
     return x
-    
+
 
 def get_preprocessing(preprocessing_fn):
     """Construct preprocessing transform
