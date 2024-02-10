@@ -38,19 +38,19 @@ class Dataset(BaseDataset):
         #     himage, target= sample['image'], sample['mask']
         # target = target.reshape(480,640,1)
 #         timage = timage.reshape(480,640,1)
-        if self.preprocessing:
-            sample = self.preprocessing(image=himage, mask=target)
-            himage, target = sample['image'], sample['mask']
-            # sample = self.preprocessing(image=timage)
-            # timage= sample['image']
-            # sample = self.preprocessing
-            # print("hi")
-            # himage = self.transform(himage)
-            # target = self.transform(target)
-            target = target/255
-            target = normalize_data(target)
-            print(target.shape)
-            print(himage.shape)
+        # if self.preprocessing:
+        #     sample = self.preprocessing(image=himage, mask=target)
+        #     himage, target = sample['image'], sample['mask']
+        #     # sample = self.preprocessing(image=timage)
+        #     # timage= sample['image']
+        #     # sample = self.preprocessing
+        #     # print("hi")
+        #     # himage = self.transform(himage)
+        #     # target = self.transform(target)
+        #     target = target/255
+        #     target = normalize_data(target)
+        #     print(target.shape)
+        #     print(himage.shape)
 
 
         return himage,target #target#, label
