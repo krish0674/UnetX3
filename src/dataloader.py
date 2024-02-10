@@ -44,7 +44,7 @@ class Dataset(BaseDataset):
             # sample = self.preprocessing(image=timage)
             # timage= sample['image']
             # sample = self.preprocessing
-            print("hi")
+            # print("hi")
             himage = self.transform(himage)
             target = self.transform(target)
             target = target/255
