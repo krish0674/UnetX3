@@ -49,6 +49,9 @@ class Dataset(BaseDataset):
             # target = self.transform(target)
             target = target/255
             target = normalize_data(target)
+            print(target.shape)
+            print(himage.shape)
+
 
         return himage,target #target#, label
         
