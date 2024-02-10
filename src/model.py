@@ -184,9 +184,7 @@ class UnetX3(torch.nn.Module):
         a=self.model(x)
         b=self.model(a)
         c=self.model(b)
-        print(a.shape)
-        print(a.shape)
-        print(a.shape)
+        print(a)
 
         return a,b,c
             
