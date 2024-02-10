@@ -31,16 +31,16 @@ def train(epochs, batch_size, hr_dir, tar_dir, hr_val_dir, tar_val_dir, encoder=
     train_dataset = Dataset(
         hr_dir,
         tar_dir,
-        #transform=transform,
+        transform=transform,
         # augmentation=get_training_augmentation(), 
-        preprocessing=get_preprocessing(preprocessing_fn)
+        #preprocessing=get_preprocessing(preprocessing_fn)
     )
     valid_dataset = Dataset(
         hr_val_dir,
         tar_val_dir,
-        #transform=transform,
+        transform=transform,
         # augmentation=get_validation_augmentation(), 
-        preprocessing=get_preprocessing(preprocessing_fn)
+        #preprocessing=get_preprocessing(preprocessing_fn)
     )
     train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
     valid_loader = DataLoader(valid_dataset, batch_size=batch_size, shuffle=True)#, drop_last=True)
