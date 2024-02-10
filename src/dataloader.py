@@ -26,8 +26,8 @@ class Dataset(BaseDataset):
     def __getitem__(self, i):
         
         # read data
-        himage = cv2.imread(self.hr_list[i], cv2.IMREAD_GRAYSCALE)
-        target = cv2.imread(self.tar_list[i], cv2.IMREAD_GRAYSCALE)
+        himage = cv2.imread(self.hr_list[i], 0)
+        target = cv2.imread(self.tar_list[i], 0)
         
         #timage = cv2.imread(self.thermal_list[i])
         # apply augmentations
