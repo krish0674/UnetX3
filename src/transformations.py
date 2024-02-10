@@ -50,7 +50,14 @@ def get_validation_augmentation():
 
 
 def to_tensor(x, **kwargs):
-    return x.transpose(2, 0, 1).astype('float32')
+    # If x is a 2D array (grayscale image), add a new axis to create a single channel
+    if len(x.shape) == 2:
+        x = x[np.newaxis, :, :].astype('float32')
+    else:
+        # For a 3D array (already has channels), transpose from (H, W, C) to (C, H, W)
+        x = x.transpose(2, 0, 1).astype('float32')
+    return x
+    
 
 def get_preprocessing(preprocessing_fn):
     """Construct preprocessing transform
