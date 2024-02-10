@@ -177,7 +177,7 @@ class UnetX3(torch.nn.Module):
             encoder_name=encoder_name,  
             encoder_weights=encoder_weights,  
             in_channels=input_channels,  
-            classes=output_channels,  
+           # classes=output_channels,  
         )
 
     def forward(self, x):
