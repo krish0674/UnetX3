@@ -4,8 +4,7 @@ import numpy as np
 import albumentations as A
 from albumentations.pytorch import ToTensorV2
 from torch.utils.data import Dataset, DataLoader
-from .misc import list_image_paths
-from .misc import list_image_paths
+from .misc import list_image_paths,normalize_data
 
 
 
@@ -32,5 +31,7 @@ class Dataset(Dataset):
         if self.transform:
             transformed_high_res = self.transform(image=high_res_image)['image']
             transformed_low_res = self.transform(image=low_res_image)['image']
+            transformed_high_res=normalize_data(transformed_high_res)
+            transformed_low_res=normalize_data(transformed_low_res)
 
         return transformed_low_res, transformed_high_res
