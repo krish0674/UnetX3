@@ -33,3 +33,19 @@ def list_img(dir1):
     for x in range(len(lst)):
         lst[x]= dir1+ '/'+ lst[x]
     return lst
+
+import os
+
+def list_image_paths(high_res_folder, low_res_folder):
+    high_res_files = sorted([f for f in os.listdir(high_res_folder) if os.path.isfile(os.path.join(high_res_folder, f))])
+    
+    low_res_files = sorted([f for f in os.listdir(low_res_folder) if os.path.isfile(os.path.join(low_res_folder, f))])
+    
+    pairs = []
+    for hr_file in high_res_files:
+        if hr_file in low_res_files:
+            hr_path = os.path.join(high_res_folder, hr_file)
+            lr_path = os.path.join(low_res_folder, hr_file)
+            pairs.append((hr_path, lr_path))
+    
+    return pairs
