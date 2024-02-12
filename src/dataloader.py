@@ -4,13 +4,9 @@ import numpy as np
 import albumentations as A
 from albumentations.pytorch import ToTensorV2
 from torch.utils.data import Dataset, DataLoader
-from misc import list_image_paths
-def get_transform():
-    return A.Compose([
-        A.Resize(448, 640),
-        A.Normalize(mean=[0.485], std=[0.229]), 
-        ToTensorV2(),
-    ])
+from .misc import list_image_paths
+
+
 
 class Dataset(Dataset):
     def __init__(self, high_res_folder, low_res_folder, transform=None):
