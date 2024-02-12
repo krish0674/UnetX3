@@ -48,8 +48,8 @@ def train(epochs, batch_size, hr_dir, tar_dir, hr_val_dir, tar_val_dir, encoder=
     )
 
     # Create the DataLoader
-    train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
-    valid_loader = DataLoader(val_dataset, batch_size=32, shuffle=True)
+    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+    valid_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=True)
 
     
 
