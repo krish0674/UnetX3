@@ -1,94 +1,39 @@
-from torch.utils.data import DataLoader
-from torch.utils.data import Dataset as BaseDataset
+import os
 import cv2
-from .misc import normalize_data, list_img
-from PIL import Image
 import numpy as np
-import torch
-class Dataset(BaseDataset):  
-    def __init__(
-            self, 
-            hr_dir: str, 
-            #thermal_dir:str,
-            tar_dir: str, 
-            augmentation=None, 
-            preprocessing=None,
-            transform=None
-    ):
-        self.hr_list = list_img(hr_dir)
-        #self.thermal_list= list_img(thermal_dir)
-        self.tar_list = list_img(tar_dir)
-        
-        self.augmentation = augmentation
-        self.preprocessing = preprocessing
-        self.transform=transform
+import albumentations as A
+from albumentations.pytorch import ToTensorV2
+from torch.utils.data import Dataset, DataLoader
+from misc import list_image_paths
+def get_transform():
+    return A.Compose([
+        A.Resize(448, 640),
+        A.Normalize(mean=[0.485], std=[0.229]), 
+        ToTensorV2(),
+    ])
 
-    def __getitem__(self, i):
-        
-        # read data
-        himage = cv2.imread(self.hr_list[i], 0)
-        target = cv2.imread(self.tar_list[i], 0)
-        
-        #timage = cv2.imread(self.thermal_list[i])
-        # apply augmentations
-        # if self.augmentation:
-        #     sample = self.augmentation(image=himage,mask=target)
-        #     himage, target= sample['image'], sample['mask']
-        # target = target.reshape(480,640,1)
-#         timage = timage.reshape(480,640,1)
-        if self.preprocessing:
-            sample = self.preprocessing(image=himage, mask=target)
-            himage, target = sample['image'], sample['mask']
-            
-            target = target/255
-            target = normalize_data(target)
-            # print(target.shape)
-            # print(himage.shape)
+class Dataset(Dataset):
+    def __init__(self, high_res_folder, low_res_folder, transform=None):
+        self.image_pairs = list_image_paths(high_res_folder, low_res_folder)
+        self.transform = transform
 
-
-        return himage,target #target#, label
-        
     def __len__(self):
-        return len(self.hr_list)
+        return len(self.image_pairs)
 
-# import os
+    def __getitem__(self, idx):
+        high_res_path, low_res_path = self.image_pairs[idx]
 
-# def list_image_paths(main_folder):
-#     image_paths = []
-#     mask_paths = []
+        # Load images as grayscale
+        high_res_image = cv2.imread(high_res_path, cv2.IMREAD_GRAYSCALE)
+        low_res_image = cv2.imread(low_res_path, cv2.IMREAD_GRAYSCALE)
 
-#     for subdir, dirs, files in os.walk(main_folder):
-#         for file in files:
-#             if file.startswith('LR'):
-#                 image_path = os.path.join(subdir, file)
-#                 mask_path = os.path.join(subdir, file.replace('LR', 'QM'))
-#                 if os.path.exists(mask_path):
-#                     image_paths.append(image_path)
-#                     mask_paths.append(mask_path)
+        # Ensure images are 2D arrays (H, W), add a channel dimension (H, W, 1) for Albumentations
+        high_res_image = np.expand_dims(high_res_image, axis=-1)
+        low_res_image = np.expand_dims(low_res_image, axis=-1)
 
-#     return image_paths, mask_paths
+        # Apply transformations
+        if self.transform:
+            transformed_high_res = self.transform(image=high_res_image)['image']
+            transformed_low_res = self.transform(image=low_res_image)['image']
 
-# from torch.utils.data import Dataset, DataLoader
-# from PIL import Image
-
-# class Dataset(Dataset):
-#     def __init__(self, image_paths, mask_paths, transform=None):
-#         self.image_paths = image_paths
-#         self.mask_paths = mask_paths
-#         self.transform = transform
-
-#     def __len__(self):
-#         return len(self.image_paths)
-
-#     def __getitem__(self, index):
-#         image_path = self.image_paths[index]
-#         mask_path = self.mask_paths[index]
-
-#         image = Image.open(image_path).convert("RGB")
-#         mask = Image.open(mask_path).convert("RGB") 
-
-#         if self.transform is not None:
-#             image = self.transform(image)
-#             mask = self.transform(mask)
-
-#         return image, mask
+        return transformed_low_res, transformed_high_res

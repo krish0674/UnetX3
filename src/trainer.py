@@ -10,7 +10,12 @@ from torchmetrics import PeakSignalNoiseRatio
 import torch
 from torch.utils.data import DataLoader
 from torchvision import transforms
-
+import os
+import cv2
+import numpy as np
+import albumentations as A
+from albumentations.pytorch import ToTensorV2
+from torch.utils.data import Dataset, DataLoader
 
 def train(epochs, batch_size, hr_dir, tar_dir, hr_val_dir, tar_val_dir, encoder='resnet34', encoder_weights='imagenet', device='cuda', lr=1e-4):
     activation = 'tanh' 
@@ -21,29 +26,32 @@ def train(epochs, batch_size, hr_dir, tar_dir, hr_val_dir, tar_val_dir, encoder=
         encoder_weights=encoder_weights, 
     )
 
-    preprocessing_fn = smp.encoders.get_preprocessing_fn(encoder, encoder_weights)
-    
-    transform = transforms.Compose([
-        transforms.Resize((256, 256)),
-        transforms.ToTensor(),
+    def get_transform():
+        return A.Compose([
+            A.Resize(448, 640),
+            A.Normalize(mean=[0.485], std=[0.229]), 
+            ToTensorV2(),
     ])
 
+    transform = get_transform()
+
     train_dataset = Dataset(
-        hr_dir,
-        tar_dir,
-        #transform=transform,
-        # augmentation=get_training_augmentation(), 
-         preprocessing=get_preprocessing(preprocessing_fn)
+    high_res_folder=tar_dir,
+    low_res_folder=hr_dir,
+    transform=transform
     )
-    valid_dataset = Dataset(
-        hr_val_dir,
-        tar_val_dir,
-        #transform=transform,
-        # augmentation=get_validation_augmentation(), 
-        preprocessing=get_preprocessing(preprocessing_fn)
+
+    val_dataset = Dataset(
+    high_res_folder=tar_val_dir,
+    low_res_folder=hr_val_dir,
+    transform=transform
     )
-    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
-    valid_loader = DataLoader(valid_dataset, batch_size=batch_size, shuffle=True)#, drop_last=True)
+
+    # Create the DataLoader
+    train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
+    valid_loader = DataLoader(val_dataset, batch_size=32, shuffle=True)
+
+    
 
     # loss = custom_loss(batch_size, beta=beta)
     # lossV = custom_lossv()
