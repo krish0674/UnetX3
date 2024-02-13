@@ -29,6 +29,8 @@ def train(epochs, batch_size, hr_dir, tar_dir, hr_val_dir, tar_val_dir, encoder=
     def get_transform():
         return A.Compose([
             A.Resize(448, 640),
+            A.HorizontalFlip(p=0.5),
+            A.VerticalFlip(p=0.5),
             ToTensorV2(),
     ])
 
@@ -45,7 +47,7 @@ def train(epochs, batch_size, hr_dir, tar_dir, hr_val_dir, tar_val_dir, encoder=
     high_res_folder=tar_dir,
     low_res_folder=hr_dir,
     transform=transform,
-    augmentation=train_augmentation
+    #augmentation=train_augmentation
     )
 
     val_dataset = Dataset(
