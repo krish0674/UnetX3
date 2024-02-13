@@ -6,12 +6,19 @@ from albumentations.pytorch import ToTensorV2
 from torch.utils.data import Dataset, DataLoader
 from .misc import list_image_paths,normalize_data
 
-
+import os
+import cv2
+import numpy as np
+import albumentations as A
+from albumentations.pytorch import ToTensorV2
+from torch.utils.data import Dataset, DataLoader
+from .misc import list_image_paths, normalize_data
 
 class Dataset(Dataset):
-    def __init__(self, high_res_folder, low_res_folder, transform=None):
+    def __init__(self, high_res_folder, low_res_folder, transform=None, augmentation=None):
         self.image_pairs = list_image_paths(high_res_folder, low_res_folder)
         self.transform = transform
+        self.augmentation = augmentation
 
     def __len__(self):
         return len(self.image_pairs)
@@ -27,11 +34,15 @@ class Dataset(Dataset):
         high_res_image = np.expand_dims(high_res_image, axis=-1)
         low_res_image = np.expand_dims(low_res_image, axis=-1)
 
-        # Apply transformations
-        if self.transform:
-            transformed_high_res = self.transform(image=high_res_image)['image']
-            transformed_low_res = self.transform(image=low_res_image)['image']
-            transformed_high_res=normalize_data(transformed_high_res)
-            transformed_low_res=normalize_data(transformed_low_res)
+        if self.augmentation:
+            augmented = self.augmentation(image=high_res_image, mask=low_res_image)
+            high_res_image = augmented['image']
+            low_res_image = augmented['mask']
 
-        return transformed_low_res, transformed_high_res
+        if self.transform:
+            high_res_image = self.transform(image=high_res_image)['image']
+            low_res_image = self.transform(image=low_res_image)['image']
+            high_res_image = normalize_data(high_res_image)
+            low_res_image = normalize_data(low_res_image)
+
+        return low_res_image, high_res_image
