@@ -34,16 +34,16 @@ class Dataset(Dataset):
         high_res_image = np.expand_dims(high_res_image, axis=-1)
         low_res_image = np.expand_dims(low_res_image, axis=-1)
 
+        if self.augmentation:
+            augmented = self.augmentation(image=high_res_image, mask=low_res_image)
+            high_res_image = augmented['image']
+            low_res_image = augmented['mask']
+            
         if self.transform:
             high_res_image = self.transform(image=high_res_image)['image']
             low_res_image = self.transform(image=low_res_image)['image']
             high_res_image = normalize_data(high_res_image)
             low_res_image = normalize_data(low_res_image)
-
-        if self.augmentation:
-            augmented = self.augmentation(image=high_res_image, mask=low_res_image)
-            high_res_image = augmented['image']
-            low_res_image = augmented['mask']
 
 
         return low_res_image, high_res_image
