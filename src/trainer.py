@@ -29,8 +29,8 @@ def train(epochs, batch_size, hr_dir, tar_dir, hr_val_dir, tar_val_dir, encoder=
     def get_transform():
         return A.Compose([
             A.Resize(448, 640),
-            A.HorizontalFlip(p=0.5),
-            A.VerticalFlip(p=0.5),
+            A.HorizontalFlip(p=0.3),
+            A.VerticalFlip(p=0.3),
             ToTensorV2(),
     ])
 
@@ -38,8 +38,8 @@ def train(epochs, batch_size, hr_dir, tar_dir, hr_val_dir, tar_val_dir, encoder=
 
     train_augmentation = A.Compose([
     A.Resize(height=448, width=640),
-    A.HorizontalFlip(p=0.5),
-    A.VerticalFlip(p=0.5),
+    A.HorizontalFlip(p=0.2),
+    A.VerticalFlip(p=0.2),
      ])
 
 
