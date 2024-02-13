@@ -19,7 +19,7 @@ from albumentations.pytorch import ToTensorV2
 
 def train(epochs, batch_size, hr_dir, tar_dir, hr_val_dir, tar_val_dir, encoder='resnet34', encoder_weights='imagenet', device='cuda', lr=1e-4):
     activation = 'tanh' 
-    # create segmentation model with pretrained encoder
+    # create segmentastion model with pretrained encoder
     model = UnetX3(
         activation=activation,
         encoder_name=encoder, 
