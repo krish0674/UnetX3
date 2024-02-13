@@ -12,6 +12,18 @@ def unnormalize_data(data):
     data /= 2
     return data
 
+def standardize_data(data):
+    """
+    Standardize the data to have zero mean and unit variance.
+
+    Parameters:
+        data (numpy.ndarray): Input data to be standardized.
+
+    Returns:
+        numpy.ndarray: Standardized data.
+    """
+    standardized_data = (data - np.mean(data)) / np.std(data)
+    return standardized_data
 # helper function for data visualization
 def visualize(**images):
     """PLot images in one row."""
