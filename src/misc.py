@@ -2,10 +2,11 @@ import matplotlib.pyplot as plt
 import os
 
 # normalizing target image to be compatible with tanh activation function
-def normalize_data(data):
-    data *= 2
-    data -= 1
-    return data
+def normalize_data(image):
+    image = image.float()
+    image /= 255.0
+    image = 2 * image - 1
+    return image
 
 def unnormalize_data(data):
     data += 1
@@ -24,6 +25,7 @@ def standardize_data(data):
     """
     standardized_data = (data - np.mean(data)) / np.std(data)
     return standardized_data
+
 # helper function for data visualization
 def visualize(**images):
     """PLot images in one row."""
