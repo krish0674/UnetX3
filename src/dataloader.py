@@ -11,7 +11,7 @@ import numpy as np
 import albumentations as albu
 from torch.utils.data import Dataset
 
-class CustomDataset(Dataset):
+class Dataset(Dataset):
     def __init__(self, high_res_folder, low_res_folder, transform=None, augmentation=None):
         self.image_pairs = list_image_paths(high_res_folder, low_res_folder)  # Ensure this function returns pairs of paths
         self.transform = transform
