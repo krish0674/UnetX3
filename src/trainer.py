@@ -29,6 +29,7 @@ def train(epochs, batch_size, hr_dir, tar_dir, hr_val_dir, tar_val_dir, encoder=
     def get_transform():
         return A.Compose([
             ToTensorV2(),
+            is_check_shapes=False
     ])
 
     transform = get_transform()
