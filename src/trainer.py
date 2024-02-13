@@ -15,6 +15,8 @@ import cv2
 import numpy as np
 import albumentations as A
 from albumentations.pytorch import ToTensorV2
+from torch.optim.lr_scheduler import ExponentialLR
+
 #from torch.utils.data import Dataset, DataLoader
 
 def train(epochs, batch_size, hr_dir, tar_dir, hr_val_dir, tar_val_dir, encoder='resnet34', encoder_weights='imagenet', device='cuda', lr=1e-4):
@@ -83,7 +85,9 @@ def train(epochs, batch_size, hr_dir, tar_dir, hr_val_dir, tar_val_dir, encoder=
     optimizer = torch.optim.Adam([ 
         dict(params=model.parameters(), lr=lr),
     ])
-    # scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer,250)
+
+    scheduler = ExponentialLR(optimizer, gamma=0.96)
+
     train_epoch = TrainEpoch(
         model, 
         loss=loss, 
@@ -108,7 +112,7 @@ def train(epochs, batch_size, hr_dir, tar_dir, hr_val_dir, tar_val_dir, encoder=
         print('\nEpoch: {}'.format(i))
         train_logs = train_epoch.run(train_loader)
         valid_logs = valid_epoch.run(valid_loader)
-        # scheduler.step()
+        scheduler.step()
         print(train_logs)
         wandb.log({'epoch':i+1,'t_loss':train_logs['loss_x3'],'t_ssim':train_logs['ssim'],'v_loss':valid_logs['loss_x3'],'v_ssim':valid_logs['ssim'],'v_psnr':valid_logs['psnr'],'t_psnr':train_logs['psnr']})
         if max_ssim <= valid_logs['ssim']:
