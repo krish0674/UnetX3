@@ -6,13 +6,13 @@ def get_training_augmentation():
         albu.HorizontalFlip(p=0.5),
         albu.VerticalFlip(p=0.5),
     ]
-    return albu.Compose(train_transform,additional_targets={'image1':'mask'})
+    return albu.Compose(train_transform,additional_targets={'image1':'mask'},is_check_shapes=False)
     
 def get_validation_augmentation():
     test_transform = [
         albu.Resize(448,640,always_apply=True),
 ]
-    return albu.Compose(test_transform,additional_targets={'image1':'mask'})
+    return albu.Compose(test_transform,additional_targets={'image1':'mask'},is_check_shapes=False)
 
 
 def to_tensor(x, **kwargs):
