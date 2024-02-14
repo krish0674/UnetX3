@@ -71,7 +71,7 @@ def train(epochs, batch_size, hr_dir, tar_dir, hr_val_dir, tar_val_dir, encoder=
 
     # valid_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=True)
 
-    loss=lossX3_p()
+    loss=lossX3_mse()
 
     Z = StructuralSimilarityIndexMeasure()
     P = PeakSignalNoiseRatio()
