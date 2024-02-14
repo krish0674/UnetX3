@@ -54,23 +54,6 @@ def train(epochs, batch_size, hr_dir, tar_dir, hr_val_dir, tar_val_dir, encoder=
     train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
     valid_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=True)
 
-    
-
-    # loss = custom_loss(batch_size, beta=beta)
-    # lossV = custom_lossv()
-    
-    # image_paths, mask_paths = list_image_paths(hr_dir)
-
-    # train_dataset = Dataset(image_paths, mask_paths, transform=transform)
-
-    # train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
-    
-    # image_paths1, mask_paths1 = list_image_paths(hr_val_dir)
-
-    # val_dataset = Dataset(image_paths1, mask_paths1, transform=transform)
-
-    # valid_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=True)
-
     loss=lossX3_mse()
 
     Z = StructuralSimilarityIndexMeasure()
