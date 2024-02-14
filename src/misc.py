@@ -4,7 +4,7 @@ import os
 # normalizing target image to be compatible with tanh activation function
 def normalize_data(image):
     image = image.float()
-    # image /= 255.0
+    image /= 255.0
     image = 2 * image - 1
     return image
 
