@@ -1,18 +1,21 @@
 import albumentations as albu
-import numpy as np
+import cv2  # Import cv2 to use cv2.INTER_CUBIC
+
 def get_training_augmentation():
     train_transform = [
-        albu.Resize(448,640,always_apply=True),
+        # Specify bicubic interpolation using cv2.INTER_CUBIC
+        albu.Resize(448, 640, interpolation=cv2.INTER_CUBIC, always_apply=True),
         albu.HorizontalFlip(p=0.5),
         albu.VerticalFlip(p=0.5),
     ]
-    return albu.Compose(train_transform,additional_targets={'image1':'mask'},is_check_shapes=False)
+    return albu.Compose(train_transform, additional_targets={'image1': 'mask'}, is_check_shapes=False)
     
 def get_validation_augmentation():
     test_transform = [
-        albu.Resize(448,640,always_apply=True),
-]
-    return albu.Compose(test_transform,additional_targets={'image1':'mask'},is_check_shapes=False)
+        # Specify bicubic interpolation using cv2.INTER_CUBIC
+        albu.Resize(448, 640, interpolation=cv2.INTER_CUBIC, always_apply=True),
+    ]
+    return albu.Compose(test_transform, additional_targets={'image1': 'mask'}, is_check_shapes=False)
 
 
 def to_tensor(x, **kwargs):

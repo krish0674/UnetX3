@@ -93,6 +93,6 @@ class lossX3(base.Loss):
         y=self.mse(img2,gt)
         z=self.mse(img3,gt)
 
-        return 0.15*x+0.25*y+0.6*z
+        return (1/7)*x+(2/7)*y+(4/7)*z
 
         
