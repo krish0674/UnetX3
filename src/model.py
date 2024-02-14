@@ -5,7 +5,7 @@ from segmentation_models_pytorch.base.modules import Activation
 from segmentation_models_pytorch.encoders import get_encoder
 from segmentation_models_pytorch.decoders.unet.decoder import UnetDecoder
 import segmentation_models_pytorch as smp 
-
+from .misc import scale_and_standardize
 def initialize_decoder(module):
     for m in module.modules():
 
@@ -185,10 +185,12 @@ class UnetX3(torch.nn.Module):
 
     def forward(self, x):
 
+        x=scale_and_standardize(x)
         a = self.model(x)
+        a=scale_and_standardize(a)
         b = self.model(a)
+        b=scale_and_standardize(b)
         c = self.model(b)
-
         return a, b, c
 
             
