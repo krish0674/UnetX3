@@ -183,7 +183,6 @@ class UnetX3(torch.nn.Module):
             in_channels=input_channels,
         )
 
-
     def forward(self, x):
 
         a = self.model(x)
