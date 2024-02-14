@@ -84,6 +84,16 @@ class custom_lossv(base.Loss):
         return x +y/10 + p/10
         # return x+p/10+y/10  OG
 
+class lossX3_mse(base.Loss):
+    def __init__(self):
+        super().__init__()
+        self.mse=nn.MSELoss()
+    def forward(self,img1,img2,img3,gt):
+        x=self.mse(img1,gt)
+        y=self.mse(img2,gt)
+        z=self.mse(img3,gt)
+
+        return (1/7)*x+(2/7)*y+(4/7)*z
 
 class PerceptualLoss(nn.Module):
     """Perceptual loss with commonly used style loss.
@@ -185,16 +195,7 @@ class PerceptualLoss(nn.Module):
 
         return percep_loss, style_loss
     
-class lossX3_mse(base.Loss):
-    def __init__(self):
-        super().__init__()
-        self.mse=nn.MSELoss()
-    def forward(self,img1,img2,img3,gt):
-        x=self.mse(img1,gt)
-        y=self.mse(img2,gt)
-        z=self.mse(img3,gt)
 
-        return (1/7)*x+(2/7)*y+(4/7)*z
 
 import torch.nn as nn
 
