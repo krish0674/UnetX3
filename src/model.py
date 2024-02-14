@@ -183,20 +183,12 @@ class UnetX3(torch.nn.Module):
             in_channels=input_channels,
         )
 
-        self.instance_norm = nn.InstanceNorm2d(1,track_running_stats=True,affine=True)
 
     def forward(self, x):
-        norm_x = self.instance_norm(x)
 
-        a = self.model(norm_x)
-
-        norm_a = self.instance_norm(a)
-
-        b = self.model(norm_a)
-
-        norm_b = self.instance_norm(b)
-
-        c = self.model(norm_b)
+        a = self.model(x)
+        b = self.model(a)
+        c = self.model(b)
 
         return a, b, c
 
