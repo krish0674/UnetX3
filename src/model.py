@@ -169,23 +169,37 @@ class Unet(SegmentationModel):
 
 
 
+import torch
+import torch.nn as nn
+import segmentation_models_pytorch as smp
+
 class UnetX3(torch.nn.Module):
-    def __init__(self,activation, encoder_name,encoder_weights,input_channels=1, output_channels=1):
+    def __init__(self, activation, encoder_name, encoder_weights, input_channels=1, output_channels=1):
         super(UnetX3, self).__init__()
         self.model = smp.UnetPlusPlus(
             activation=activation,
-            encoder_name=encoder_name,  
-            encoder_weights=encoder_weights,  
-            in_channels=input_channels, 
-           # classes=output_channels,  
+            encoder_name=encoder_name,
+            encoder_weights=encoder_weights,
+            in_channels=input_channels,
         )
 
-    def forward(self, x):
-        a=self.model(x)
-        b=self.model(a)
-        c=self.model(b)
+        self.instance_norm = nn.InstanceNorm2d(1)
 
-        return a,b,c
+    def forward(self, x):
+        norm_x = self.instance_norm(x)
+
+        a = self.model(norm_x)
+
+        norm_a = self.instance_norm(a)
+
+        b = self.model(norm_a)
+
+        norm_b = self.instance_norm(b)
+
+        c = self.model(norm_b)
+
+        return a, b, c
+
             
 
             
