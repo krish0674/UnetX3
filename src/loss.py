@@ -4,6 +4,13 @@ import torch.nn.functional as F
 from torchmetrics import StructuralSimilarityIndexMeasure
 from torchmetrics import PeakSignalNoiseRatio
 from segmentation_models_pytorch.utils import base
+import math
+import torch
+import numpy as np
+from torch import autograd as autograd
+from torch import nn as nn
+from torch.nn import functional as F
+from torch.autograd import Variable
 
 def device_as(t1, t2):
     """
@@ -95,41 +102,41 @@ class lossX3_mse(base.Loss):
 
         return (1/7)*x+(2/7)*y+(4/7)*z
 
-class VGGFeatureExtractor(nn.Module):
-    def __init__(self, layer_name_list, vgg_type='vgg19', use_input_norm=True, range_norm=False):
-        super(VGGFeatureExtractor, self).__init__()
-        self.range_norm = range_norm
-        self.use_input_norm = use_input_norm
-        if vgg_type == 'vgg19':
-            self.vgg = models.vgg19(pretrained=True).features
-        else:
-            raise NotImplementedError(f'{vgg_type} is not supported yet.')
+# class VGGFeatureExtractor(nn.Module):
+#     def __init__(self, layer_name_list, vgg_type='vgg19', use_input_norm=True, range_norm=False):
+#         super(VGGFeatureExtractor, self).__init__()
+#         self.range_norm = range_norm
+#         self.use_input_norm = use_input_norm
+#         if vgg_type == 'vgg19':
+#             self.vgg = models.vgg19(pretrained=True).features
+#         else:
+#             raise NotImplementedError(f'{vgg_type} is not supported yet.')
 
-        # Freeze VGG parameters
-        for param in self.vgg.parameters():
-            param.requires_grad = False
+#         # Freeze VGG parameters
+#         for param in self.vgg.parameters():
+#             param.requires_grad = False
 
-        self.selected_layers = self.get_selected_layers(layer_name_list)
+#         self.selected_layers = self.get_selected_layers(layer_name_list)
 
-    def get_selected_layers(self, layer_name_list):
-        selected_layers = []
-        for name, layer in self.vgg._modules.items():
-            if name in layer_name_list:
-                selected_layers.append(layer)
-            elif len(selected_layers) == len(layer_name_list):
-                break
-        return nn.Sequential(*selected_layers)
+#     def get_selected_layers(self, layer_name_list):
+#         selected_layers = []
+#         for name, layer in self.vgg._modules.items():
+#             if name in layer_name_list:
+#                 selected_layers.append(layer)
+#             elif len(selected_layers) == len(layer_name_list):
+#                 break
+#         return nn.Sequential(*selected_layers)
 
-    def forward(self, x):
-        if self.range_norm:
-            # Normalize from [-1, 1] to [0, 1]
-            x = (x + 1) / 2
-        if self.use_input_norm:
-            # Normalize using ImageNet stats
-            mean = torch.tensor([0.485, 0.456, 0.406]).view(1, 3, 1, 1).to(x.device)
-            std = torch.tensor([0.229, 0.224, 0.225]).view(1, 3, 1, 1).to(x.device)
-            x = (x - mean) / std
-        return self.selected_layers(x)
+#     def forward(self, x):
+#         if self.range_norm:
+#             # Normalize from [-1, 1] to [0, 1]
+#             x = (x + 1) / 2
+#         if self.use_input_norm:
+#             # Normalize using ImageNet stats
+#             mean = torch.tensor([0.485, 0.456, 0.406]).view(1, 3, 1, 1).to(x.device)
+#             std = torch.tensor([0.229, 0.224, 0.225]).view(1, 3, 1, 1).to(x.device)
+#             x = (x - mean) / std
+#         return self.selected_layers(x)
 
 
 class PerceptualLoss(nn.Module):
