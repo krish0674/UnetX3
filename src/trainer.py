@@ -54,7 +54,7 @@ def train(epochs, batch_size, hr_dir, tar_dir, hr_val_dir, tar_val_dir, encoder=
     train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
     valid_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=True)
 
-    loss=lossX3_p()
+    loss=lossX3_mse()
 
     Z = StructuralSimilarityIndexMeasure()
     P = PeakSignalNoiseRatio()
@@ -97,7 +97,7 @@ def train(epochs, batch_size, hr_dir, tar_dir, hr_val_dir, tar_val_dir, encoder=
         valid_logs = valid_epoch.run(valid_loader)
         scheduler.step()
         print(train_logs)
-        wandb.log({'epoch':i+1,'t_loss':train_logs['loss_x3_p'],'t_ssim':train_logs['ssim'],'v_loss':valid_logs['loss_x3_p'],'v_ssim':valid_logs['ssim'],'v_psnr':valid_logs['psnr'],'t_psnr':train_logs['psnr']})
+        wandb.log({'epoch':i+1,'t_loss':train_logs['loss_x3_mse'],'t_ssim':train_logs['ssim'],'v_loss':valid_logs['loss_x3_mse'],'v_ssim':valid_logs['ssim'],'v_psnr':valid_logs['psnr'],'t_psnr':train_logs['psnr']})
         if max_ssim <= valid_logs['ssim']:
             max_ssim = valid_logs['ssim']
             max_psnr = valid_logs['psnr']
