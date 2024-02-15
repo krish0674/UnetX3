@@ -145,8 +145,8 @@ class Epoch:
             metric.to(self.device)
 
     def _format_logs(self, logs):
-        str_logs = ["{} - {:.4}".format(k, v) for k, v in logs.items()]
-        s = ", ".join(str_logs)
+        str_logs = ['{} - {:.4}'.format(k, v) for k, v in logs.items()]
+        s = ', '.join(str_logs)
         return s
 
     def batch_update(self, x, y):
@@ -164,7 +164,6 @@ class Epoch:
 
         with tqdm(dataloader, desc=self.stage_name, file=sys.stdout, disable=not (self.verbose)) as iterator:
             for x, y in iterator:
-                # print(x.shape)
                 x, y = x.to(self.device), y.to(self.device)
                 loss, y_pred = self.batch_update(x, y)
 
@@ -190,14 +189,7 @@ class Epoch:
 
 class TrainEpoch(Epoch):
     def __init__(self, model, loss, metrics, optimizer, device="cpu", verbose=True):
-        super().__init__(
-            model=model,
-            loss=loss,
-            metrics=metrics,
-            stage_name="train",
-            device=device,
-            verbose=verbose
-        )
+        super().__init__(model=model, loss=loss, metrics=metrics, stage_name="train", device=device, verbose=verbose)
         self.optimizer = optimizer
 
     def on_epoch_start(self):
@@ -205,34 +197,26 @@ class TrainEpoch(Epoch):
 
     def batch_update(self, x, y):
         self.optimizer.zero_grad()
-        # print(x.shape)
-        prediction_a, prediction_b, prediction_c = self.model(x)
-        loss = self.loss(prediction_a, prediction_b, prediction_c, y)
+        prediction = self.model(x)
+        loss = self.loss(prediction, y)  # Adjusted to use only one prediction and ground truth
         loss.backward()
         self.optimizer.step()
 
-        return loss, prediction_c
-
+        return loss, prediction
 
 
 class ValidEpoch(Epoch):
     def __init__(self, model, loss, metrics, device="cpu", verbose=True):
-        super().__init__(
-            model=model,
-            loss=loss,
-            metrics=metrics,
-            stage_name="valid",
-            device=device,
-            verbose=verbose,
-        )
+        super().__init__(model=model, loss=loss, metrics=metrics, stage_name="valid", device=device, verbose=verbose)
 
     def on_epoch_start(self):
         self.model.eval()
 
     def batch_update(self, x, y):
         with torch.no_grad():
-            prediction_a, prediction_b, prediction_c = self.model(x)
-            loss = self.loss(prediction_a, prediction_b, prediction_c, y)
-       
-            return loss, prediction_c
+            prediction = self.model(x)
+            loss = self.loss(prediction, y)  # Adjusted to use only one prediction and ground truth
+
+            return loss, prediction
+
 

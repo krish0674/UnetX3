@@ -96,12 +96,12 @@ class lossX3_mse(base.Loss):
     def __init__(self):
         super().__init__()
         self.mse=nn.MSELoss()
-    def forward(self,img1,img2,img3,gt):
+    def forward(self,img1,gt):
         x=self.mse(img1,gt)
-        y=self.mse(img2,gt)
-        z=self.mse(img3,gt)
+        # y=self.mse(img2,gt)
+        # z=self.mse(img3,gt)
 
-        return (1/7)*x+(2/7)*y+(4/7)*z
+        return x
 
 class VGGFeatureExtractor(nn.Module):
     def __init__(self, layer_name_list, vgg_type='vgg19', use_input_norm=True, range_norm=False):

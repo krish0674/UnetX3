@@ -186,10 +186,10 @@ class UnetX3(torch.nn.Module):
     def forward(self, x):
 
         a = self.model(x)
-        b = self.model(a)
-        c = self.model(b)
+        # b = self.model(a)
+        # c = self.model(b)
 
-        return a, b, c
+        return a#, b, c
 
             
 
