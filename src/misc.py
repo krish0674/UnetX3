@@ -63,3 +63,10 @@ def list_image_paths(high_res_folder, low_res_folder):
             pairs.append((hr_path, lr_path))
     
     return pairs
+
+def scale_and_standardize(tensor, mean=0.4384, std=0.2625):
+    scaled_tensor = (tensor + 1) / 2.0
+
+    standardized_tensor = (scaled_tensor - mean) / std
+
+    return standardized_tensor
