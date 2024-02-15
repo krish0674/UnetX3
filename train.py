@@ -16,6 +16,7 @@ def main(args):
         'encoder': args.encoder,
         'encoder_weights': args.encoder_weights,
         'lr': args.lr,
+        'checkpoint_path': args.checkpoint_path
         # 'beta': args.beta
     }
     wandb.init(project="UnetX3", entity="kasliwal17",
@@ -39,5 +40,7 @@ if __name__ == '__main__':
     parser.add_argument('--encoder_weights', type=str, required=False, default='imagenet')
     parser.add_argument('--lr', type=float, required=False, default=1e-4)
     parser.add_argument('--beta', type=float, required=False, default=1)
+    parser.add_argument('--checkpoint_path', type=str, required=False, default=None)
+
     arguments = parser.parse_args()
     main(arguments)

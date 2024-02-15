@@ -19,7 +19,7 @@ from torch.optim.lr_scheduler import ExponentialLR
 
 #from torch.utils.data import Dataset, DataLoader
 
-def train(epochs, batch_size, hr_dir, tar_dir, hr_val_dir, tar_val_dir, encoder='resnet34', encoder_weights='imagenet', device='cuda', lr=1e-4):
+def train(epochs, batch_size, hr_dir, tar_dir, hr_val_dir, tar_val_dir, encoder='resnet34', encoder_weights='imagenet', device='cuda', lr=1e-4,checkpoint_path=None):
     activation = 'tanh' 
     # create segmentastion model with pretrained encoder
     model = UnetX3(
@@ -27,6 +27,10 @@ def train(epochs, batch_size, hr_dir, tar_dir, hr_val_dir, tar_val_dir, encoder=
         encoder_name=encoder, 
         encoder_weights=encoder_weights, 
     )
+
+    if checkpoint_path is not None: 
+        model.model.load_state_dict(torch.load(checkpoint_path, map_location=device))  # Load the model weights
+        print("Loaded model weights from:", checkpoint_path)
 
     def get_transform():
         return A.Compose([
@@ -111,5 +115,6 @@ def train(epochs, batch_size, hr_dir, tar_dir, hr_val_dir, tar_val_dir, encoder=
 def train_model(configs):
     train(configs['epochs'], configs['batch_size'], configs['hr_dir'], configs['tar_dir'],
          configs['hr_val_dir'], configs['tar_val_dir'], configs['encoder'],
-         configs['encoder_weights'], configs['device'], configs['lr'])
+         configs['encoder_weights'], configs['device'], configs['lr'],
+         checkpoint_path=configs['checkpoint_path'])
          
