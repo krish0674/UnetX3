@@ -29,7 +29,7 @@ def train(epochs, batch_size, hr_dir, tar_dir, hr_val_dir, tar_val_dir, encoder=
     )
 
     if checkpoint_path is not None: 
-        model.model.load_state_dict(torch.load(checkpoint_path, map_location=device))  # Load the model weights
+        model.load_state_dict(torch.load(checkpoint_path, map_location=device))  # Load the model weights
         print("Loaded model weights from:", checkpoint_path)
 
     def get_transform():
