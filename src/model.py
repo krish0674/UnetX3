@@ -206,19 +206,23 @@ class Discriminator(nn.Module):
         super(Discriminator, self).__init__()
 
         self.model = nn.Sequential(
-            nn.Upsample(size=(256, 256), mode='bilinear', align_corners=False),
-            nn.Conv2d(3, 16, 3, stride=2, padding=1),
+            #nn.Upsample(size=(256, 256), mode='bilinear', align_corners=False),
+            nn.Conv2d(1, 16, 3, stride=2, padding=1),
             nn.LeakyReLU(0.2),
             nn.InstanceNorm2d(16, affine=True),
             *discriminator_block(16, 32),
             *discriminator_block(32, 64),
             *discriminator_block(64, 128),
             *discriminator_block(128, 128),
-            nn.Conv2d(128, 1, 8, padding=0)
+            nn.Conv2d(128, 1, 8, padding=0),
+            nn.AdaptiveAvgPool2d(1), 
+            nn.Flatten(), 
+            nn.Sigmoid()
         )
 
     def forward(self, img_input):
         return self.model(img_input)
+
             
 
             
