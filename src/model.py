@@ -198,6 +198,7 @@ class UnetX3(torch.nn.Module):
 
 
     def forward(self, x):
+        print(x.shape)
         x=self.scale_and_standardize(x)
         a = self.model(x)
         return a
