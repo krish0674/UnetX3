@@ -189,50 +189,58 @@ class Epoch:
 
 
 class TrainEpoch(Epoch):
-    def __init__(self, model, loss, metrics, optimizer, device="cpu", verbose=True):
-        super().__init__(
-            model=model,
-            loss=loss,
-            metrics=metrics,
-            stage_name="train",
-            device=device,
-            verbose=verbose
-        )
-        self.optimizer = optimizer
+    def __init__(self, model, discriminator, loss, metrics, g_optimizer, d_optimizer, g_loss_fn, d_loss_fn, device="cpu", verbose=True):
+        super().__init__(model, loss, metrics, "train", device, verbose)
+        self.discriminator = discriminator
+        self.g_optimizer = g_optimizer
+        self.d_optimizer = d_optimizer
+        self.g_loss_fn = g_loss_fn  # Generator's GAN loss function
+        self.d_loss_fn = d_loss_fn  # Discriminator's loss function
 
     def on_epoch_start(self):
         self.model.train()
+        self.discriminator.train()
 
     def batch_update(self, x, y):
-        self.optimizer.zero_grad()
-        # print(x.shape)
+        # Update Discriminator
+        self.d_optimizer.zero_grad()
+        real_loss = self.d_loss_fn(self.discriminator(y), torch.ones(y.size(0), 1, device=self.device))
         prediction_a, prediction_b, prediction_c = self.model(x)
-        loss = self.loss(prediction_a, prediction_b, prediction_c, y)
+        fake_loss = self.d_loss_fn(self.discriminator(prediction_c.detach()), torch.zeros(prediction_c.size(0), 1, device=self.device))
+        d_loss = (real_loss + fake_loss) / 2
+        d_loss.backward()
+        self.d_optimizer.step()
+
+        # Update Generator
+        self.g_optimizer.zero_grad()
+        g_loss_fake = self.g_loss_fn(self.discriminator(prediction_c), torch.ones(prediction_c.size(0), 1, device=self.device))
+        loss = self.loss(prediction_a, prediction_b, prediction_c, y) + g_loss_fake
         loss.backward()
-        self.optimizer.step()
+        self.g_optimizer.step()
 
         return loss, prediction_c
 
 
 
+
 class ValidEpoch(Epoch):
-    def __init__(self, model, loss, metrics, device="cpu", verbose=True):
-        super().__init__(
-            model=model,
-            loss=loss,
-            metrics=metrics,
-            stage_name="valid",
-            device=device,
-            verbose=verbose,
-        )
+    def __init__(self, model, discriminator, loss, metrics, g_loss_fn, device="cpu", verbose=True):
+        super().__init__(model, loss, metrics, "valid", device, verbose)
+        self.discriminator = discriminator
+        self.g_loss_fn = g_loss_fn  # Only for monitoring
 
     def on_epoch_start(self):
         self.model.eval()
+        self.discriminator.eval()  # Ensure discriminator is in eval mode
 
     def batch_update(self, x, y):
         with torch.no_grad():
             prediction_a, prediction_b, prediction_c = self.model(x)
             loss = self.loss(prediction_a, prediction_b, prediction_c, y)
-       
-            return loss, prediction_c
+            g_loss_fake = self.g_loss_fn(self.discriminator(prediction_c), torch.ones(prediction_c.size(0), 1, device=self.device))
+
+            # Optionally, combine GAN loss with the main loss for monitoring
+            total_loss = loss + g_loss_fake
+            return total_loss, prediction_c
+
 
