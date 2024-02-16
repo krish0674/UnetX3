@@ -27,7 +27,7 @@ def train(epochs, batch_size, hr_dir, tar_dir, hr_val_dir, tar_val_dir, encoder=
         encoder_name=encoder, 
         encoder_weights=encoder_weights, 
     )
-    discriminator=Discriminator()
+    discriminator=Discriminator().to(device) 
 
     def get_transform():
         return A.Compose([
