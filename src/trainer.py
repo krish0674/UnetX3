@@ -65,7 +65,7 @@ def train(epochs, batch_size, hr_dir, tar_dir, hr_val_dir, tar_val_dir, encoder=
     metrics = [Z, P]
 
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)
-    d_optimizer = torch.optim.Adam(discriminator.parameters(), lr=lr * 0.1)  # Discriminator optimizer, consider using a different learning rate
+    d_optimizer = torch.optim.Adam(discriminator.parameters(), lr=lr * 0.5)
 
     scheduler = ExponentialLR(optimizer, gamma=0.96)
 
