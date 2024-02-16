@@ -194,8 +194,8 @@ class TrainEpoch(Epoch):
         self.discriminator = discriminator
         self.g_optimizer = g_optimizer
         self.d_optimizer = d_optimizer
-        self.g_loss_fn = g_loss_fn  # Generator's GAN loss function
-        self.d_loss_fn = d_loss_fn  # Discriminator's loss function
+        self.g_loss_fn = g_loss_fn  
+        self.d_loss_fn = d_loss_fn
 
     def on_epoch_start(self):
         self.model.train()
@@ -214,7 +214,7 @@ class TrainEpoch(Epoch):
         # Update Generator
         self.g_optimizer.zero_grad()
         g_loss_fake = self.g_loss_fn(self.discriminator(prediction_c), torch.ones(prediction_c.size(0), 1, device=self.device))
-        loss = self.loss(prediction_a, prediction_b, prediction_c, y) + g_loss_fake
+        loss = 0.5(self.loss(prediction_a, prediction_b, prediction_c, y)) + 0.5*(g_loss_fake)
         loss.backward()
         self.g_optimizer.step()
 
@@ -227,11 +227,11 @@ class ValidEpoch(Epoch):
     def __init__(self, model, discriminator, loss, metrics, g_loss_fn, device="cpu", verbose=True):
         super().__init__(model, loss, metrics, "valid", device, verbose)
         self.discriminator = discriminator
-        self.g_loss_fn = g_loss_fn  # Only for monitoring
+        self.g_loss_fn = g_loss_fn
 
     def on_epoch_start(self):
         self.model.eval()
-        self.discriminator.eval()  # Ensure discriminator is in eval mode
+        self.discriminator.eval()  
 
     def batch_update(self, x, y):
         with torch.no_grad():
@@ -239,8 +239,7 @@ class ValidEpoch(Epoch):
             loss = self.loss(prediction_a, prediction_b, prediction_c, y)
             g_loss_fake = self.g_loss_fn(self.discriminator(prediction_c), torch.ones(prediction_c.size(0), 1, device=self.device))
 
-            # Optionally, combine GAN loss with the main loss for monitoring
-            total_loss = loss + g_loss_fake
+            total_loss = 0.5*(loss) + 0.5(g_loss_fake)
             return total_loss, prediction_c
 
 
