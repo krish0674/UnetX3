@@ -185,7 +185,7 @@ class UnetX3(torch.nn.Module):
         )
 
     def scale_and_standardize(self, tensor, mean=0.4384, std=0.2625):
-        
+
         mean = torch.tensor(mean, device=tensor.device)
         std = torch.tensor(std, device=tensor.device)
 
@@ -200,7 +200,6 @@ class UnetX3(torch.nn.Module):
     def forward(self, x):
         x=self.scale_and_standardize(x)
         a = self.model(x)
-
         return a
 
             
