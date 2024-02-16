@@ -214,7 +214,7 @@ class TrainEpoch(Epoch):
         # Update Generator
         self.g_optimizer.zero_grad()
         g_loss_fake = self.g_loss_fn(self.discriminator(prediction_c), torch.ones(prediction_c.size(0), 1, device=self.device))
-        loss = 0.5(self.loss(prediction_a, prediction_b, prediction_c, y)) + 0.5*(g_loss_fake)
+        loss = 0.5*(self.loss(prediction_a, prediction_b, prediction_c, y)) + 0.5*(g_loss_fake)
         loss.backward()
         self.g_optimizer.step()
 
@@ -239,7 +239,7 @@ class ValidEpoch(Epoch):
             loss = self.loss(prediction_a, prediction_b, prediction_c, y)
             g_loss_fake = self.g_loss_fn(self.discriminator(prediction_c), torch.ones(prediction_c.size(0), 1, device=self.device))
 
-            total_loss = 0.5*(loss) + 0.5(g_loss_fake)
+            total_loss = 0.5*(loss) + 0.5*(g_loss_fake)
             return total_loss, prediction_c
 
 
