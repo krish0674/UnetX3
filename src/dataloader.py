@@ -43,7 +43,9 @@ class Dataset(Dataset):
         # Normalize data if needed (ensure normalize_data is suitable for your data)
         high_res_image = normalize_data(high_res_image)
         low_res_image = normalize_data(low_res_image)
+        print(low_res_image.shape)
 
         low_res_image_3ch = np.repeat(low_res_image, 3, axis=-1)
+        print(low_res_image_3ch.shape)
 
         return low_res_image_3ch, high_res_image
