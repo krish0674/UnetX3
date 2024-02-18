@@ -50,7 +50,7 @@ class AverageValueMeter(Meter):
             self.mean = self.mean_old + (value - n * self.mean_old) / float(self.n)
             self.m_s += (value - self.mean_old) * (value - self.mean)
             self.mean_old = self.mean
-            self.std = np.sqrt(self.m_s.cpu().numpy() / (self.n - 1.0))
+            self.std = np.sqrt(self.m_s / (self.n.cpu().numpy()- 1.0))
 
     def value(self):
         return self.mean, self.std
