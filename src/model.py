@@ -176,19 +176,25 @@ import segmentation_models_pytorch as smp
 class UnetX3(torch.nn.Module):
     def __init__(self, activation, encoder_name, encoder_weights, input_channels=1, output_channels=1):
         super(UnetX3, self).__init__()
-        self.model = smp.DeepLabV3Plus(
+        self.model = smp.UnetPlusPlus(
             activation=activation,
             encoder_name=encoder_name,
             encoder_weights=encoder_weights,
             in_channels=input_channels,
         )
 
+    def scale_and_standardize(self, tensor, mean=0.4384, std=0.2625):
+        scaled_tensor = (tensor + 1) / 2.0
+        standardized_tensor = (scaled_tensor - mean) / std
+        return standardized_tensor
+
     def forward(self, x):
-
+        x = self.scale_and_standardize(x)
         a = self.model(x)
-        b = self.model(a)
-        c = self.model(b)
-
+        norm_a = self.scale_and_standardize(a)
+        b = self.model(norm_a)
+        norm_b = self.scale_and_standardize(b)
+        c = self.model(norm_b)
         return a, b, c
 
 
