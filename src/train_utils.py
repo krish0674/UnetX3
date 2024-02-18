@@ -200,7 +200,7 @@ class Epoch:
                 loss, y_pred = self.batch_update(x, y)
 
                 # update loss logs
-                loss_value = loss.numpy()
+                loss_value = loss
                 loss_meter.add(loss_value)
                 loss_logs = {self.loss.__name__: loss_meter.mean}
                 logs.update(loss_logs)
