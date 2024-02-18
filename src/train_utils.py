@@ -202,7 +202,7 @@ class Epoch:
                 # update loss logs
                 loss_value = loss
                 loss_meter.add(loss_value)
-                loss_logs = {self.loss.__name__: loss_meter.mean}
+                loss_logs = {self.loss.__class__.__name__: loss_meter.mean}
                 logs.update(loss_logs)
 
                 # update metrics logs
