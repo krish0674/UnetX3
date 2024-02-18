@@ -50,7 +50,7 @@ class AverageValueMeter(Meter):
             self.mean = self.mean_old + (value - n * self.mean_old) / float(self.n)
             self.m_s += (value - self.mean_old) * (value - self.mean)
             self.mean_old = self.mean
-            self.std = np.sqrt(self.m_s / (self.n.cpu().numpy()- 1.0))
+            self.std = np.sqrt(self.m_s / (self.n - 1.0))
 
     def value(self):
         return self.mean, self.std
@@ -132,11 +132,11 @@ class AverageValueMeter(Meter):
 #         return logs
 
 def compute_gradient_penalty(D, real_samples, fake_samples, device):
-    #print(real_samples.shape)
-    #print(fake_samples.shape)
+    print(real_samples.shape)
+    print(fake_samples.shape)
     # Random weight term for interpolation between real and fake samples
     alpha = torch.rand(real_samples.size(0), 1, 1, 1).to(device)
-    #print(alpha.shape)
+    print(alpha.shape)
     # Get random interpolation between real and fake samples
     interpolates = (alpha * real_samples + ((1 - alpha) * fake_samples)).requires_grad_(True)
     interpolates = interpolates.to(device)
@@ -200,7 +200,7 @@ class Epoch:
                 loss, y_pred = self.batch_update(x, y)
 
                 # update loss logs
-                loss_value = loss
+                loss_value = loss.cpu().detach().numpy()
                 loss_meter.add(loss_value)
                 loss_logs = {self.loss.__class__.__name__: loss_meter.mean}
                 logs.update(loss_logs)
@@ -276,6 +276,7 @@ class TrainEpoch(Epoch):
         self.d_optimizer.step()
 
         return l_g_total, prediction_c
+
 
 
 
