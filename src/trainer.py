@@ -54,7 +54,7 @@ def train(epochs, batch_size, hr_dir, tar_dir, hr_val_dir, tar_val_dir, encoder=
     train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
     valid_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
 
-    loss = lossX3_mse()
+    loss = lossX3_mse(device=device)
     d_loss_fn = nn.BCELoss()  
     g_loss_fn = nn.BCELoss()
 

@@ -91,17 +91,27 @@ class custom_lossv(base.Loss):
         p=(1 - self.psnr(y_pr, y_gt)/40)
         return x +y/10 + p/10
         # return x+p/10+y/10  OG
+import torch.nn as nn
 
-class lossX3_mse(base.Loss):
-    def __init__(self):
-        super().__init__()
-        self.mse=nn.MSELoss()
-    def forward(self,img1,img2,img3,gt):
-        x=self.mse(img1,gt)
-        y=self.mse(img2,gt)
-        z=self.mse(img3,gt)
+class lossX3_mse(nn.Module):
+    def __init__(self, device):
+        super(lossX3_mse, self).__init__()
+        self.mse = nn.MSELoss()
+        self.device = device
 
-        return (1/7)*x+(2/7)*y+(4/7)*z
+    def forward(self, img1, img2, img3, gt):
+        # Ensure all inputs and the target are on the specified device
+        img1 = img1.to(self.device)
+        img2 = img2.to(self.device)
+        img3 = img3.to(self.device)
+        gt = gt.to(self.device)
+
+        x = self.mse(img1, gt)
+        y = self.mse(img2, gt)
+        z = self.mse(img3, gt)
+
+        return (1/7)*x + (2/7)*y + (4/7)*z
+
 
 class VGGFeatureExtractor(nn.Module):
     def __init__(self, layer_name_list, vgg_type='vgg19', use_input_norm=True, range_norm=False):
