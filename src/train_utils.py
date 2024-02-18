@@ -260,6 +260,11 @@ class TrainEpoch(Epoch):
             l_g_total.backward()
             self.g_optimizer.step()
 
+            print(f"Type of l_g_pix: {type(l_g_pix)}, Value: {l_g_pix}")
+            print(f"Type of g_loss_fake: {type(g_loss_fake)}, Value: {g_loss_fake}")
+            print(f"Type of l_g_total before adding l_g_pix: {type(l_g_total)}, Value: {l_g_total}")
+
+
         # Update Discriminator
         for p in self.discriminator.parameters():
             p.requires_grad = True  # Unfreeze discriminator
