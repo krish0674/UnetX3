@@ -187,7 +187,7 @@ class TrainEpoch(Epoch):
         l_g_total += l_g_pix
 
         # gan loss
-        disc_output=self.discriminator(prediction_c).squeeze(1).squeeze(1).squeeze(1)
+        disc_output=self.discriminator(prediction_c).squeeze(1).squeeze(1)
        
         print(disc_output.shape)
         g_loss_fake = self.g_loss_fn( disc_output,torch.ones(prediction_c.size(0), 1, device=self.device))
@@ -204,11 +204,11 @@ class TrainEpoch(Epoch):
 
         self.d_optimizer.zero_grad()
         
-        disc_output=self.discriminator(y).squeeze(1).squeeze(1).squeeze(1)
+        disc_output=self.discriminator(y).squeeze(1).squeeze(1)
 
         real_loss = self.d_loss_fn(disc_output ,torch.ones(y.size(0), 1, device=self.device))
         prediction_a, prediction_b, prediction_c = self.model(x) 
-        disc_output=self.discriminator(prediction_c).squeeze(1).squeeze(1).squeeze(1)
+        disc_output=self.discriminator(prediction_c).squeeze(1).squeeze(1)
         fake_loss = self.d_loss_fn(disc_output, torch.zeros(prediction_c.size(0), 1, device=self.device))
         gradient_penalty = compute_gradient_penalty(self.discriminator, y, prediction_c, self.device)
         d_loss = real_loss + fake_loss + self.gp_weight * gradient_penalty
@@ -237,7 +237,7 @@ class ValidEpoch(Epoch):
             l_g_pix = self.loss(prediction_a, prediction_b, prediction_c, y)
 
             # gan loss
-            disc_output=self.discriminator(prediction_c).squeeze(1).squeeze(1).squeeze(1)
+            disc_output=self.discriminator(prediction_c).squeeze(1).squeeze(1)
             g_loss_fake = self.g_loss_fn(disc_output, torch.ones(prediction_c.size(0), 1, device=self.device))
 
             # Total loss is the sum of pixel loss and GAN loss, without averaging them since we are not optimizing the discriminator here
