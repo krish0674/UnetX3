@@ -219,11 +219,13 @@ class Discriminator(nn.Module):
             *discriminator_block(32, 64),  # Output: (56, 80)
             *discriminator_block(64, 128), # Output: (28, 40)
             *discriminator_block(128, 128), # Output: (14, 20)
-            nn.Conv2d(128, 1, 14, padding=0)  # Output: (1, 1)
+            nn.Conv2d(128, 1, 14, padding=0),  # Output: (1, 7)
+            nn.AdaptiveAvgPool2d((1, 1))  # Output: (1, 1)
         )
 
     def forward(self, img_input):
         return self.model(img_input)
+
 
 
 
