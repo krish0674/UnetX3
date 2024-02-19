@@ -183,18 +183,18 @@ class UnetX3(torch.nn.Module):
             in_channels=input_channels,
         )
 
-    def scale_and_standardize(self, tensor, mean=0.4384, std=0.2625):
-        scaled_tensor = torch.clamp((tensor + 1) / 2.0, 0, 1)
-        standardized_tensor = (scaled_tensor - mean) / std
-        return standardized_tensor
+    # def scale_and_standardize(self, tensor, mean=0.4384, std=0.2625):
+    #     scaled_tensor = torch.clamp((tensor + 1) / 2.0, 0, 1)
+    #     standardized_tensor = (scaled_tensor - mean) / std
+    #     return standardized_tensor
 
     def forward(self, x):
-        x = self.scale_and_standardize(x)
+        #x = self.scale_and_standardize(x)
         a = self.model(x)
-        norm_a = self.scale_and_standardize(a)
-        b = self.model(norm_a)
-        norm_b = self.scale_and_standardize(b)
-        c = self.model(norm_b)
+        #norm_a = self.scale_and_standardize(a)
+        b = self.model(a)
+        #norm_b = self.scale_and_standardize(b)
+        c = self.model(b)
         return a, b, c
 
 
