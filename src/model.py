@@ -221,9 +221,6 @@ class Discriminator(nn.Module):
             *discriminator_block(64, 128),
             *discriminator_block(128, 128),
             nn.Conv2d(128, 1, 8, padding=0),
-            nn.AdaptiveAvgPool2d(1), 
-            nn.Flatten(), 
-            nn.Sigmoid()
         )
 
     def forward(self, img_input):

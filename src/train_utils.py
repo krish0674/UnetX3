@@ -67,7 +67,7 @@ class AverageValueMeter(Meter):
 
 
 def compute_gradient_penalty(D, real_samples, fake_samples, device):
-\
+
     # Random weight term for interpolation between real and fake samples
     alpha = torch.rand(real_samples.size(0), 1, 1, 1).to(device)
     # Get random interpolation between real and fake samples
