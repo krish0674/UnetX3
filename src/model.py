@@ -184,7 +184,7 @@ class UnetX3(torch.nn.Module):
         )
 
     def scale_and_standardize(self, tensor, mean=0.4384, std=0.2625):
-        scaled_tensor = (tensor + 1) / 2.0
+        scaled_tensor = torch.clamp((tensor + 1) / 2.0, 0, 1)
         standardized_tensor = (scaled_tensor - mean) / std
         return standardized_tensor
 
