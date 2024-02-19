@@ -207,7 +207,7 @@ class TrainEpoch(Epoch):
         disc_output=self.discriminator(y).squeeze()
         disc_output=disc_output.unsqueeze(1)
 
-        real_loss = self.d_loss_fn(disc_output torch.ones(y.size(0), 1, device=self.device))
+        real_loss = self.d_loss_fn(disc_output ,torch.ones(y.size(0), 1, device=self.device))
         prediction_a, prediction_b, prediction_c = self.model(x) 
         disc_output=self.discriminator(prediction_c).squeeze()
         disc_output=disc_output.unsqueeze(1)
