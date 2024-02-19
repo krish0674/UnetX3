@@ -75,7 +75,7 @@ def compute_gradient_penalty(D, real_samples, fake_samples, device):
     interpolates = interpolates.to(device)
     d_interpolates = D(interpolates)
     d_interpolates = d_interpolates.to(device)
-    fake = Variable(torch.FloatTensor(real_samples.shape[0], 1).fill_(1.0), requires_grad=False)
+    fake = Variable(torch.FloatTensor(real_samples.shape[0], 1, 1, 1).fill_(1.0), requires_grad=False)
     fake = fake.to(device)
     # Get gradient w.r.t. interpolates
     gradients = autograd.grad(
