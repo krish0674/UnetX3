@@ -204,7 +204,7 @@ class TrainEpoch(Epoch):
 
         self.d_optimizer.zero_grad()
 
-        real_loss = self.d_loss_fn(self.discriminator(y).sqeeze(), torch.ones(y.size(0), 1, device=self.device))
+        real_loss = self.d_loss_fn(self.discriminator(y).squeeze(), torch.ones(y.size(0), 1, device=self.device))
         prediction_a, prediction_b, prediction_c = self.model(x)  # Regenerate predictions for discriminator update
         fake_loss = self.d_loss_fn(self.discriminator(prediction_c).squeeze(), torch.zeros(prediction_c.size(0), 1, device=self.device))
         gradient_penalty = compute_gradient_penalty(self.discriminator, y, prediction_c, self.device)
