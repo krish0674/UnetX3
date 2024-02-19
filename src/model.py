@@ -212,7 +212,7 @@ class Discriminator(nn.Module):
         super(Discriminator, self).__init__()
 
         self.model = nn.Sequential(
-            nn.Conv2d(3, 16, 3, stride=2, padding=1),  # No upsampling
+            nn.Conv2d(1, 16, 3, stride=2, padding=1),  # No upsampling
             nn.LeakyReLU(0.2),
             nn.InstanceNorm2d(16, affine=True),
             *discriminator_block(16, 32),
