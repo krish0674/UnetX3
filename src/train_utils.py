@@ -189,7 +189,6 @@ class TrainEpoch(Epoch):
         # gan loss
         disc_output=self.discriminator(prediction_c).squeeze(1).squeeze(1)
        
-        print(disc_output.shape)
         g_loss_fake = self.g_loss_fn( disc_output,torch.ones(prediction_c.size(0), 1, device=self.device))
         l_g_total += g_loss_fake
 
