@@ -67,11 +67,9 @@ class AverageValueMeter(Meter):
 
 
 def compute_gradient_penalty(D, real_samples, fake_samples, device):
-    print(real_samples.shape)
-    print(fake_samples.shape)
+\
     # Random weight term for interpolation between real and fake samples
     alpha = torch.rand(real_samples.size(0), 1, 1, 1).to(device)
-    print(alpha.shape)
     # Get random interpolation between real and fake samples
     interpolates = (alpha * real_samples + ((1 - alpha) * fake_samples)).requires_grad_(True)
     interpolates = interpolates.to(device)
@@ -216,8 +214,6 @@ class TrainEpoch(Epoch):
         self.d_optimizer.step()
 
         return l_g_total, prediction_c
-
-
 
 
 class ValidEpoch(Epoch):
