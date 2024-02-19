@@ -187,7 +187,7 @@ class TrainEpoch(Epoch):
         l_g_total += l_g_pix
 
         # gan loss
-        disc_output=self.discriminator(prediction_c)
+        disc_output=self.discriminator(prediction_c).squeeze()
         print(disc_output.shape)
         disc_output=disc_output.unsqueeze(1)
         print(disc_output.shape)
