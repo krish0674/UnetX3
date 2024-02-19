@@ -212,18 +212,19 @@ class Discriminator(nn.Module):
         super(Discriminator, self).__init__()
 
         self.model = nn.Sequential(
-            nn.Conv2d(1, 16, 3, stride=2, padding=1),  # No upsampling
+            nn.Conv2d(1, 16, 3, stride=2, padding=1),  # Output: (224, 320)
             nn.LeakyReLU(0.2),
             nn.InstanceNorm2d(16, affine=True),
-            *discriminator_block(16, 32),
-            *discriminator_block(32, 64),
-            *discriminator_block(64, 128),
-            *discriminator_block(128, 128),
-            nn.Conv2d(128, 1, 3, stride=2, padding=1)  # Adjusted convolutional layer
+            *discriminator_block(16, 32),  # Output: (112, 160)
+            *discriminator_block(32, 64),  # Output: (56, 80)
+            *discriminator_block(64, 128), # Output: (28, 40)
+            *discriminator_block(128, 128), # Output: (14, 20)
+            nn.Conv2d(128, 1, 14, padding=0)  # Output: (1, 1)
         )
 
     def forward(self, img_input):
         return self.model(img_input)
+
 
 
             
