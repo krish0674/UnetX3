@@ -195,8 +195,6 @@ class TrainEpoch(Epoch):
         l_g_total.backward()
         self.g_optimizer.step()
 
-
-
         # Update Discriminator
         for p in self.discriminator.parameters():
             p.requires_grad = True  # Unfreeze discriminator
@@ -206,7 +204,7 @@ class TrainEpoch(Epoch):
         disc_output=self.discriminator(y).squeeze(1).squeeze(1)
         disc_output = torch.sigmoid(disc_output)  
         real_loss = self.d_loss_fn(disc_output ,torch.ones(y.size(0), 1, device=self.device))
-        prediction_a, prediction_b, prediction_c = self.model(x) 
+        # prediction_a, prediction_b, prediction_c = self.model(x) 
 
         disc_output=self.discriminator(prediction_c).squeeze(1).squeeze(1)
         disc_output = torch.sigmoid(disc_output)  
