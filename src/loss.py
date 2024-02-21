@@ -107,166 +107,126 @@ class lossX3_mse(nn.Module):
         return (1/7)*x + (2/7)*y + (4/7)*z
 
 
-class VGGFeatureExtractor(nn.Module):
-    def __init__(self, layer_name_list, vgg_type='vgg19', use_input_norm=True, range_norm=False):
-        super(VGGFeatureExtractor, self).__init__()
-        self.range_norm = range_norm
-        self.use_input_norm = use_input_norm
-        if vgg_type == 'vgg19':
-            self.vgg = models.vgg19(pretrained=True).features
-        else:
-            raise NotImplementedError(f'{vgg_type} is not supported yet.')
-
-        # Freeze VGG parameters
-        for param in self.vgg.parameters():
-            param.requires_grad = False
-
-        self.selected_layers = self.get_selected_layers(layer_name_list)
-
-    def get_selected_layers(self, layer_name_list):
-        selected_layers = []
-        for name, layer in self.vgg._modules.items():
-            if name in layer_name_list:
-                selected_layers.append(layer)
-            elif len(selected_layers) == len(layer_name_list):
-                break
-        return nn.Sequential(*selected_layers)
-
-    def forward(self, x):
-        if self.range_norm:
-            # Normalize from [-1, 1] to [0, 1]
-            x = (x + 1) / 2
-        if self.use_input_norm:
-            # Normalize using ImageNet stats
-            mean = torch.tensor([0.485, 0.456, 0.406]).view(1, 3, 1, 1).to(x.device)
-            std = torch.tensor([0.229, 0.224, 0.225]).view(1, 3, 1, 1).to(x.device)
-            x = (x - mean) / std
-        return self.selected_layers(x)
-
-
-class PerceptualLoss(nn.Module):
-    """Perceptual loss with commonly used style loss.
+class GANLoss(nn.Module):
+    """Define GAN loss.
 
     Args:
-        layer_weights (dict): The weight for each layer of vgg feature.
-            Here is an example: {'conv5_4': 1.}, which means the conv5_4
-            feature layer (before relu5_4) will be extracted with weight
-            1.0 in calculting losses.
-        vgg_type (str): The type of vgg network used as feature extractor.
-            Default: 'vgg19'.
-        use_input_norm (bool):  If True, normalize the input image in vgg.
-            Default: True.
-        range_norm (bool): If True, norm images with range [-1, 1] to [0, 1].
-            Default: False.
-        perceptual_weight (float): If `perceptual_weight > 0`, the perceptual
-            loss will be calculated and the loss will multiplied by the
-            weight. Default: 1.0.
-        style_weight (float): If `style_weight > 0`, the style loss will be
-            calculated and the loss will multiplied by the weight.
-            Default: 0.
-        criterion (str): Criterion used for perceptual loss. Default: 'l1'.
+        gan_type (str): Support 'vanilla', 'lsgan', 'wgan', 'hinge'.
+        real_label_val (float): The value for real label. Default: 1.0.
+        fake_label_val (float): The value for fake label. Default: 0.0.
+        loss_weight (float): Loss weight. Default: 1.0.
+            Note that loss_weight is only for generators; and it is always 1.0
+            for discriminators.
     """
 
     def __init__(self,
-                 layer_weights,
-                 vgg_type='vgg19',
-                 use_input_norm=True,
-                 range_norm=False,
-                 perceptual_weight=1.0,
-                 style_weight=0.,
-                 criterion='l1'):
-        super(PerceptualLoss, self).__init__()
-        self.perceptual_weight = perceptual_weight
-        self.style_weight = style_weight
-        self.layer_weights = layer_weights
-        self.vgg = VGGFeatureExtractor(
-            layer_name_list=list(layer_weights.keys()),
-            vgg_type=vgg_type,
-            use_input_norm=use_input_norm,
-            range_norm=range_norm)
+                 gan_type,
+                 real_label_val=1.0,
+                 fake_label_val=0.0,
+                 loss_weight=1.0,
+                 device='cuda'):
+        super(GANLoss, self).__init__()
+        self.gan_type = gan_type
+        self.loss_weight = loss_weight
+        self.real_label_val = real_label_val
+        self.fake_label_val = fake_label_val
+        self.device = device
 
-        self.criterion_type = criterion
-        if self.criterion_type == 'l1':
-            self.criterion = torch.nn.L1Loss()
-        elif self.criterion_type == 'l2':
-            self.criterion = torch.nn.L2loss()
-        elif self.criterion_type == 'fro':
-            self.criterion = None
+        if self.gan_type == 'vanilla':
+            self.loss = nn.BCEWithLogitsLoss()
+        elif self.gan_type == 'standard':
+            self.loss = None
+        elif self.gan_type == 'lsgan':
+            self.loss = nn.MSELoss()
+        elif self.gan_type == 'wgan':
+            self.loss = self._wgan_loss
+        elif self.gan_type == 'wgan_softplus':
+            self.loss = self._wgan_softplus_loss
+        elif self.gan_type == 'hinge':
+            self.loss = nn.ReLU()
         else:
             raise NotImplementedError(
-                f'{criterion} criterion has not been supported.')
+                f'GAN type {self.gan_type} is not implemented.')
 
-    def forward(self, x, gt):
-        """Forward function.
+    def _wgan_loss(self, input, target):
+        """wgan loss.
 
         Args:
-            x (Tensor): Input tensor with shape (n, c, h, w).
-            gt (Tensor): Ground-truth tensor with shape (n, c, h, w).
+            input (Tensor): Input tensor.
+            target (bool): Target label.
 
         Returns:
-            Tensor: Forward results.
+            Tensor: wgan loss.
         """
-        # extract vgg features
-        x_features = self.vgg(x)
-        gt_features = self.vgg(gt.detach())
+        return -input.mean() if target else input.mean()
 
-        # calculate perceptual loss
-        if self.perceptual_weight > 0:
-            percep_loss = 0
-            for k in x_features.keys():
-                if self.criterion_type == 'fro':
-                    percep_loss += torch.norm(
-                        x_features[k] - gt_features[k],
-                        p='fro') * self.layer_weights[k]
+    def _wgan_softplus_loss(self, input, target):
+        """wgan loss with soft plus. softplus is a smooth approximation to the
+        ReLU function.
+
+        In StyleGAN2, it is called:
+            Logistic loss for discriminator;
+            Non-saturating loss for generator.
+
+        Args:
+            input (Tensor): Input tensor.
+            target (bool): Target label.
+
+        Returns:
+            Tensor: wgan loss.
+        """
+        return F.softplus(-input).mean() if target else F.softplus(
+            input).mean()
+
+    def get_target_label(self, input, target_is_real):
+        """Get target label.
+
+        Args:
+            input (Tensor): Input tensor.
+            target_is_real (bool): Whether the target is real or fake.
+
+        Returns:
+            (bool | Tensor): Target tensor. Return bool for wgan, otherwise,
+                return Tensor.
+        """
+
+        if self.gan_type in ['wgan', 'wgan_softplus']:
+            return target_is_real
+        target_val = (
+            self.real_label_val if target_is_real else self.fake_label_val)
+        return input.new_ones(input.size()) * target_val
+
+    def forward(self, input, target_is_real, is_disc=False):
+        """
+        Args:
+            input (Tensor): The input for the loss module, i.e., the network
+                prediction.
+            target_is_real (bool): Whether the targe is real or fake.
+            is_disc (bool): Whether the loss for discriminators or not.
+                Default: False.
+
+        Returns:
+            Tensor: GAN loss value.
+        """
+        target_label = self.get_target_label(input, target_is_real)
+        if self.gan_type == 'standard':
+            if is_disc:
+                if target_is_real:
+                    loss = -torch.mean(input)
                 else:
-                    percep_loss += self.criterion(
-                        x_features[k], gt_features[k]) * self.layer_weights[k]
-            percep_loss *= self.perceptual_weight
-        else:
-            percep_loss = None
+                    loss = torch.mean(input)
+            else:
+                loss = -torch.mean(input)
+        elif self.gan_type == 'hinge':
+            if is_disc:  # for discriminators in hinge-gan
+                input = -input if target_is_real else input
+                loss = self.loss(1 + input).mean()
+            else:  # for generators in hinge-gan
+                loss = -input.mean()
+        else:  # other gan types
+            loss = self.loss(input, target_label)
 
-        # calculate style loss
-        if self.style_weight > 0:
-            style_loss = 0
-            for k in x_features.keys():
-                if self.criterion_type == 'fro':
-                    style_loss += torch.norm(
-                        self._gram_mat(x_features[k]) -
-                        self._gram_mat(gt_features[k]),
-                        p='fro') * self.layer_weights[k]
-                else:
-                    style_loss += self.criterion(
-                        self._gram_mat(x_features[k]),
-                        self._gram_mat(gt_features[k])) * self.layer_weights[k]
-            style_loss *= self.style_weight
-        else:
-            style_loss = None
-
-        return percep_loss, style_loss
-    
-
-
-import torch.nn as nn
-
-class lossX3_p(nn.Module):
-    def __init__(self, layer_weights={'conv3_3' : 1}, vgg_type='vgg19', use_input_norm=False, range_norm=False, perceptual_weight=1.0, criterion='l1'):
-        super().__init__()
-        self.perceptual_loss = PerceptualLoss(
-            layer_weights=layer_weights,
-            vgg_type=vgg_type,
-            use_input_norm=use_input_norm,
-            range_norm=range_norm,
-            perceptual_weight=perceptual_weight,
-            criterion=criterion
-        )
-
-    def forward(self, img1, img2, img3, gt):
-        percep_loss_img1, _ = self.perceptual_loss(img1, gt)
-        percep_loss_img2, _ = self.perceptual_loss(img2, gt)
-        percep_loss_img3, _ = self.perceptual_loss(img3, gt)
-
-        total_loss = (1/7) * percep_loss_img1 + (2/7) * percep_loss_img2 + (4/7) * percep_loss_img3
-
-        return total_loss
+        # loss_weight is always 1.0 for discriminators
+        return loss if is_disc else loss * self.loss_weight
 
         
