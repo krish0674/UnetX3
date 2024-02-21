@@ -205,8 +205,7 @@ class TrainEpoch(Epoch):
         disc_output = torch.sigmoid(disc_output)  
         real_loss = self.d_loss_fn(disc_output ,torch.ones(y.size(0), 1, device=self.device))
         # prediction_a, prediction_b, prediction_c = self.model(x) 
-        with torch.no_grad():  # Ensure no gradients are accumulated for the generator
-            prediction_a, prediction_b, prediction_c = self.model(x) 
+        prediction_a, prediction_b, prediction_c = self.model(x) 
         disc_output=self.discriminator(prediction_c).squeeze(1).squeeze(1)
         disc_output = torch.sigmoid(disc_output)  
         fake_loss = self.d_loss_fn(disc_output, torch.zeros(prediction_c.size(0), 1, device=self.device))
