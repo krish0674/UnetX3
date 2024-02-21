@@ -94,17 +94,11 @@ class custom_lossv(base.Loss):
 import torch.nn as nn
 
 class lossX3_mse(nn.Module):
-    def __init__(self, device):
+    def __init__(self):
         super(lossX3_mse, self).__init__()
         self.mse = nn.MSELoss()
-        self.device = device
 
     def forward(self, img1, img2, img3, gt):
-        # Ensure all inputs and the target are on the specified device
-        img1 = img1.to(self.device)
-        img2 = img2.to(self.device)
-        img3 = img3.to(self.device)
-        gt = gt.to(self.device)
 
         x = self.mse(img1, gt)
         y = self.mse(img2, gt)
