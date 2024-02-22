@@ -63,3 +63,4 @@ def list_image_paths(high_res_folder, low_res_folder):
             pairs.append((hr_path, lr_path))
     
     return pairs
+

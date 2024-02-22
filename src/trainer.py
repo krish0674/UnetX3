@@ -1,7 +1,7 @@
 import wandb
 import segmentation_models_pytorch as smp
 from .train_utils import TrainEpoch, ValidEpoch
-from .loss import custom_loss, custom_lossv,lossX3_mse
+from .loss import custom_loss, custom_lossv,lossX3_mse,GANLoss
 from .dataloader import Dataset #,list_image_paths
 from .transformations import get_training_augmentation, get_validation_augmentation, get_preprocessing
 from .model import UnetX3,Discriminator
@@ -55,8 +55,8 @@ def train(epochs, batch_size, hr_dir, tar_dir, hr_val_dir, tar_val_dir, encoder=
     valid_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
 
     loss = lossX3_mse()
-    d_loss_fn = nn.BCELoss()  
-    g_loss_fn = nn.BCELoss()
+    d_loss_fn =  GANLoss(gan_type='lsgan', real_label_val=1.0, fake_label_val=0.0, loss_weight=1).to(device)
+    g_loss_fn = GANLoss(gan_type='lsgan', real_label_val=1.0, fake_label_val=0.0, loss_weight=1).to(device)
 
     Z = StructuralSimilarityIndexMeasure()
     P = PeakSignalNoiseRatio()
