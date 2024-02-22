@@ -211,7 +211,6 @@ class TrainEpoch(Epoch):
         fake_loss = self.d_loss_fn(disc_output,False,is_disc=True)
         gradient_penalty = compute_gradient_penalty(self.discriminator, y, prediction_c, self.device)
         d_loss = real_loss + fake_loss + self.gp_weight * gradient_penalty
-        print("hi")
         d_loss.backward()
         self.d_optimizer.step()
 
