@@ -22,16 +22,15 @@ from torch import nn
 
 def setup_optimizers(model, discriminator,lr):
     optim_params = []
-    self.lr=lr
 
     for k, v in model.named_parameters():
         if v.requires_grad:
             optim_params.append(v)
 
-    optimizer_g = torch.optim.Adam(optim_params, lr=self.lr, weight_decay=0, betas=[0.9, 0.99])
+    optimizer_g = torch.optim.Adam(optim_params, lr=lr, weight_decay=0, betas=[0.9, 0.99])
 
     # Optimizer for the discriminator
-    optimizer_d = torch.optim.Adam(discriminator.parameters(), lr=0.self.lr, weight_decay=0, betas=[0.9, 0.99])
+    optimizer_d = torch.optim.Adam(discriminator.parameters(), lr=lr, weight_decay=0, betas=[0.9, 0.99])
 
     return optimizer_g, optimizer_d
 
