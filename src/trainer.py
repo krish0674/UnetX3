@@ -19,6 +19,23 @@ from torch.optim.lr_scheduler import ExponentialLR
 from torch import nn
 #from torch.utils.data import Dataset, DataLoader
 
+
+def setup_optimizers(model, discriminator,lr):
+    optim_params = []
+    self.lr=lr
+
+    for k, v in model.named_parameters():
+        if v.requires_grad:
+            optim_params.append(v)
+
+    optimizer_g = torch.optim.Adam(optim_params, lr=self.lr, weight_decay=0, betas=[0.9, 0.99])
+
+    # Optimizer for the discriminator
+    optimizer_d = torch.optim.Adam(discriminator.parameters(), lr=0.self.lr, weight_decay=0, betas=[0.9, 0.99])
+
+    return optimizer_g, optimizer_d
+
+
 def train(epochs, batch_size, hr_dir, tar_dir, hr_val_dir, tar_val_dir, encoder='resnet34', encoder_weights='imagenet', device='cuda', lr=1e-4):
     activation = 'tanh' 
     # create segmentastion model with pretrained encoder
@@ -64,8 +81,7 @@ def train(epochs, batch_size, hr_dir, tar_dir, hr_val_dir, tar_val_dir, encoder=
     Z.__name__ = 'ssim'
     metrics = [Z, P]
 
-    optimizer = torch.optim.Adam(model.parameters(), lr=lr)
-    d_optimizer = torch.optim.Adam(discriminator.parameters(), lr=lr)
+    optimizer, d_optimizer = setup_optimizers(model, discriminator,lr)
 
     scheduler = ExponentialLR(optimizer, gamma=0.96)
 
