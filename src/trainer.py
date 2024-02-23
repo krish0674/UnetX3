@@ -36,9 +36,10 @@ def setup_optimizers(model, discriminator,lr):
 
 
 def train(epochs, batch_size, hr_dir, tar_dir, hr_val_dir, tar_val_dir, encoder='resnet34', encoder_weights='imagenet', device='cuda', lr=1e-4):
-    activation = 'tanh' 
+    
     model = Unet(
     encoder_name=encoder,
+    activation = 'tanh' 
     encoder_depth=5,
     encoder_weights=None,
     fusion=True,
@@ -121,9 +122,9 @@ def train(epochs, batch_size, hr_dir, tar_dir, hr_val_dir, tar_val_dir, encoder=
         print(train_logs)
         wandb.log({
             'epoch': i+1,
-            't_loss': train_logs['lossX3_mse'],
+            't_loss': train_logs['MSELoss'],
             't_ssim': train_logs['ssim'],
-            'v_loss': valid_logs['lossX3_mse'],
+            'v_loss': valid_logs['MSELoss'],
             'v_ssim': valid_logs['ssim'],
             'v_psnr': valid_logs['psnr'],
             't_psnr': train_logs['psnr']
