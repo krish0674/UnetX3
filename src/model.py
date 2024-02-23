@@ -61,7 +61,7 @@ class SegmentationModel(torch.nn.Module):
 
         features = self.encoder(x)
         if self.fusion == True:
-            features1 = self.encoder2(y)
+            features1 = self.encoder2(x)
             
             f1 = features[-1]
             f2 = features1[-1]
