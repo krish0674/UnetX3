@@ -144,25 +144,25 @@ class Unet(SegmentationModel):
             kernel_size=3,
         )
 
-        if contrastive:
-            self.contrastive_head1= nn.Sequential(
-                                       nn.AdaptiveAvgPool2d(1),
-                                       nn.Flatten(),
-                                       nn.Linear(in_features=self.encoder.out_channels[-1], out_features=512),
-                                       nn.BatchNorm1d(512),
-                                       nn.ReLU(),
-                                       nn.Linear(in_features=512, out_features=64),
-                                       nn.BatchNorm1d(64),
-                                   )
-            self.contrastive_head2= nn.Sequential(
-                                       nn.AdaptiveAvgPool2d(1),
-                                       nn.Flatten(),
-                                       nn.Linear(in_features=self.encoder.out_channels[-1], out_features=512),
-                                       nn.BatchNorm1d(512),
-                                       nn.ReLU(),
-                                       nn.Linear(in_features=512, out_features=64),
-                                       nn.BatchNorm1d(64),
-                                   )
+        # if contrastive:
+        #     self.contrastive_head1= nn.Sequential(
+        #                                nn.AdaptiveAvgPool2d(1),
+        #                                nn.Flatten(),
+        #                                nn.Linear(in_features=self.encoder.out_channels[-1], out_features=512),
+        #                                nn.BatchNorm1d(512),
+        #                                nn.ReLU(),
+        #                                nn.Linear(in_features=512, out_features=64),
+        #                                nn.BatchNorm1d(64),
+        #                            )
+        #     self.contrastive_head2= nn.Sequential(
+        #                                nn.AdaptiveAvgPool2d(1),
+        #                                nn.Flatten(),
+        #                                nn.Linear(in_features=self.encoder.out_channels[-1], out_features=512),
+        #                                nn.BatchNorm1d(512),
+        #                                nn.ReLU(),
+        #                                nn.Linear(in_features=512, out_features=64),
+        #                                nn.BatchNorm1d(64),
+        #                            )
 
         self.name = "u-{}".format(encoder_name)
         self.initialize()
