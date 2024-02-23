@@ -39,7 +39,7 @@ def train(epochs, batch_size, hr_dir, tar_dir, hr_val_dir, tar_val_dir, encoder=
     
     model = Unet(
     encoder_name=encoder,
-    activation = 'tanh' 
+    activation = 'tanh' ,
     encoder_depth=5,
     encoder_weights=None,
     fusion=True,
