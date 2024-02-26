@@ -237,6 +237,11 @@ class GANLoss(nn.Module):
         return loss if is_disc else loss * self.loss_weight
 
 
+from utils.models.losses.loss_util import weighted_loss
+
+_reduction_modes = ['none', 'mean', 'sum']
+
+@weighted_loss
 def mse_loss(pred, target):
     return F.mse_loss(pred, target, reduction='none')
 
@@ -252,8 +257,8 @@ class MSELoss(nn.Module):
     def __init__(self, loss_weight=1.0, reduction='mean'):
         super(MSELoss, self).__init__()
         if reduction not in ['none', 'mean', 'sum']:
-            raise ValueError(f'Unsupported reduction mode: {reduction}. ')
-                           
+            raise ValueError(f'Unsupported reduction mode: {reduction}. '
+                             f'Supported ones are: {_reduction_modes}')
 
         self.loss_weight = loss_weight
         self.reduction = reduction
