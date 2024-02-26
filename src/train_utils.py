@@ -131,7 +131,7 @@ class Epoch:
                 # print(x.shape)
                 x, y = x.to(self.device), y.to(self.device)
                 loss, y_pred = self.batch_update(x, y)
-                # loss=torch.tensor(loss)
+                loss=torch.tensor(loss)
                 # update loss logs
                 loss_value = loss.cpu().detach().numpy()
                 loss_meter.add(loss_value)
