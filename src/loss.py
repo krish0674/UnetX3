@@ -229,6 +229,7 @@ class GANLoss(nn.Module):
         # loss_weight is always 1.0 for discriminators
         return loss if is_disc else loss * self.loss_weight
 
+
 class MSELoss(nn.Module):
     """MSE (L2) loss.
 
@@ -246,3 +247,14 @@ class MSELoss(nn.Module):
 
         self.loss_weight = loss_weight
         self.reduction = reduction
+
+    def forward(self, pred, target, weight=None, **kwargs):
+        """
+        Args:
+            pred (Tensor): of shape (N, C, H, W). Predicted tensor.
+            target (Tensor): of shape (N, C, H, W). Ground truth tensor.
+            weight (Tensor, optional): of shape (N, C, H, W). Element-wise
+                weights. Default: None.
+        """
+        return self.loss_weight * mse_loss(
+            pred, target, weight, reduction=self.reduction)
