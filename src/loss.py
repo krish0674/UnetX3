@@ -12,6 +12,13 @@ from torch import nn as nn
 from torch.nn import functional as F
 from torch.autograd import Variable
 from torchvision import models
+import math
+import torch
+import numpy as np
+from torch import autograd as autograd
+from torch import nn as nn
+from torch.nn import functional as F
+from torch.autograd import Variable
 
 def device_as(t1, t2):
     """
@@ -229,6 +236,10 @@ class GANLoss(nn.Module):
         # loss_weight is always 1.0 for discriminators
         return loss if is_disc else loss * self.loss_weight
 
+
+@weighted_loss
+def mse_loss(pred, target):
+    return F.mse_loss(pred, target, reduction='none')
 
 class MSELoss(nn.Module):
     """MSE (L2) loss.
