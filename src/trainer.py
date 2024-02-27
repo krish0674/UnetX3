@@ -74,7 +74,7 @@ def train(epochs, batch_size, hr_dir, tar_dir, hr_val_dir, tar_val_dir, encoder=
     train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
     valid_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
 
-    loss = MSELoss(loss_weight=4500)
+    loss = MSELoss(loss_weight=2000)
     d_loss_fn =  GANLoss(gan_type='vanilla', real_label_val=1.0, fake_label_val=0.0, loss_weight=1).to(device)
     g_loss_fn = GANLoss(gan_type='vanilla', real_label_val=1.0, fake_label_val=0.0, loss_weight=1).to(device)
 
