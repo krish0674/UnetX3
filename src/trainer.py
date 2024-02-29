@@ -41,8 +41,8 @@ def train(epochs, batch_size, hr_dir, tar_dir, hr_val_dir, tar_val_dir, encoder=
     encoder_name=encoder,
     activation = 'tanh' ,
     encoder_depth=5,
-    encoder_weights=None,
-    fusion=True,
+    encoder_weights='imagenet',
+    # fusion=True,
     decoder_channels=[256, 128, 64, 32, 16],
     in_channels=1, 
 )
