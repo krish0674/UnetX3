@@ -37,7 +37,7 @@ def setup_optimizers(model, discriminator,lr):
 
 def train(epochs, batch_size, hr_dir, tar_dir, hr_val_dir, tar_val_dir, encoder='resnet34', encoder_weights='imagenet', device='cuda', lr=1e-4):
     
-    model = Unet(
+    model = smp.Unet(
     encoder_name=encoder,
     activation = 'tanh' ,
     encoder_depth=5,
@@ -45,7 +45,6 @@ def train(epochs, batch_size, hr_dir, tar_dir, hr_val_dir, tar_val_dir, encoder=
     fusion=True,
     decoder_channels=[256, 128, 64, 32, 16],
     in_channels=1, 
-
 )
     discriminator=Discriminator().to(device) 
 
@@ -75,8 +74,8 @@ def train(epochs, batch_size, hr_dir, tar_dir, hr_val_dir, tar_val_dir, encoder=
     valid_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
 
     loss = MSELoss(loss_weight=4500)
-    d_loss_fn =  GANLoss(gan_type='wgan', real_label_val=1.0, fake_label_val=0.0, loss_weight=1).to(device)
-    g_loss_fn = GANLoss(gan_type='wgan', real_label_val=1.0, fake_label_val=0.0, loss_weight=1).to(device)
+    d_loss_fn =  GANLoss(gan_type='vanilla', real_label_val=1.0, fake_label_val=0.0, loss_weight=1).to(device)
+    g_loss_fn = GANLoss(gan_type='vanilla', real_label_val=1.0, fake_label_val=0.0, loss_weight=1).to(device)
 
     Z = StructuralSimilarityIndexMeasure()
     P = PeakSignalNoiseRatio()
