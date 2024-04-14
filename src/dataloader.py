@@ -44,6 +44,6 @@ class Dataset(Dataset):
         high_res_image = normalize_data(high_res_image)
         low_res_image = normalize_data(low_res_image)
 
-        burst_image = np.concatenate([low_res_image] * 10, axis=1)
+        burst_image = np.concatenate([low_res_image] * 10, axis=0)
 
         return burst_image, high_res_image
