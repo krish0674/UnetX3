@@ -189,11 +189,11 @@ class UnetX3(torch.nn.Module):
         return standardized_tensor
 
     def forward(self, x):
-        print(x.shape)
         x = self.scale_and_standardize(x)
         
         outputs = []
         for _ in range(3):
+            print(x.shape)
             x = self.model(x)
             x = self.scale_and_standardize(x)
             outputs.append(x)
