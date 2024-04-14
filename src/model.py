@@ -190,13 +190,16 @@ class UnetX3(torch.nn.Module):
 
     def forward(self, x):
         x = self.scale_and_standardize(x)
-        a = self.model(x)
-        norm_a = self.scale_and_standardize(a)
-        b = self.model(norm_a)
-        norm_b = self.scale_and_standardize(b)
-        c = self.model(norm_b)
-        return a, b, c
-
+        
+        outputs = []
+        for _ in range(3):
+            x = self.model(x)
+            x = self.scale_and_standardize(x)
+            outputs.append(x)
+            x = torch.cat([x] * 10, dim=1)
+        
+        return tuple(outputs)
+    
 
 from torch import nn as nn
 
