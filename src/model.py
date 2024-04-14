@@ -193,7 +193,7 @@ class UnetX3(torch.nn.Module):
         
         outputs = []
         for _ in range(3):
-            print(x.shape)
+            # print(x.shape)
             x = self.model(x)
             x = self.scale_and_standardize(x)
             outputs.append(x)
