@@ -174,7 +174,7 @@ import torch.nn as nn
 import segmentation_models_pytorch as smp
 
 class UnetX3(torch.nn.Module):
-    def __init__(self, activation, encoder_name, encoder_weights, input_channels=1, output_channels=1):
+    def __init__(self, activation, encoder_name, encoder_weights, input_channels=10, output_channels=1):
         super(UnetX3, self).__init__()
         self.model = smp.UnetPlusPlus(
             activation=activation,
