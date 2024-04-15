@@ -225,7 +225,6 @@ class Discriminator(nn.Module):
         )
 
     def forward(self, img_input):
-        print(img_input.shape)
         return self.model(img_input)
 
 
