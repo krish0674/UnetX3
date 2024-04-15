@@ -41,7 +41,7 @@ def train(epochs, batch_size, hr_dir, tar_dir, hr_val_dir, tar_val_dir, encoder=
     encoder_name=encoder,
     activation = 'tanh' ,
     encoder_weights='imagenet',
-    in_channels=1, 
+    input_channels=1, 
 )
     discriminator=Discriminator().to(device) 
 
