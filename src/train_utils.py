@@ -131,7 +131,7 @@ class Epoch:
                 # print(x.shape)
                 x, y = x.to(self.device), y.to(self.device)
                 loss, y_pred = self.batch_update(x, y)
-                loss=torch.tensor(loss)
+                # loss=torch.tensor(loss)
                 # update loss logs
                 loss_value = loss.cpu().detach().numpy()
                 loss_meter.add(loss_value)
@@ -153,7 +153,7 @@ class Epoch:
 
 
 class TrainEpoch(Epoch):
-    def __init__(self, model, discriminator, loss, metrics, g_optimizer, d_optimizer, g_loss_fn, d_loss_fn, device="cpu", verbose=True, gp_weight=10, net_d_iters=1, net_d_init_iters=5):
+    def __init__(self, model, discriminator, loss, metrics, g_optimizer, d_optimizer, g_loss_fn, d_loss_fn, device="cpu", verbose=True, gp_weight=10, net_d_iters=1, net_d_init_iters=100):
         super().__init__(model, loss, metrics, "train", device, verbose)
         self.discriminator = discriminator
         self.g_optimizer = g_optimizer
@@ -179,21 +179,21 @@ class TrainEpoch(Epoch):
 
         self.g_optimizer.zero_grad()
 
-        if (self.current_iter % self.net_d_iters == 0 and self.current_iter > self.net_d_init_iters):
-            prediction_c = self.model(x)
+        # if (self.current_iter % self.net_d_iters == 0 and self.current_iter > self.net_d_init_iters):
+        prediction_a, prediction_b, prediction_c = self.model(x)
 
-            # pixel loss
-            l_g_pix = self.loss(prediction_c, y)
-            l_g_total += l_g_pix
+        # pixel loss
+        l_g_pix = self.loss(prediction_c, y)
+        l_g_total += l_g_pix
 
-            # gan loss
-            disc_output=self.discriminator(prediction_c).squeeze(1).squeeze(1)
-            disc_output = torch.sigmoid(disc_output)  
-            g_loss_fake = self.g_loss_fn(disc_output, True, is_disc=False)
-            l_g_total += g_loss_fake
+        # gan loss
+        disc_output=self.discriminator(prediction_c).squeeze(1).squeeze(1)
+        #disc_output = torch.sigmoid(disc_output)  
+        g_loss_fake = self.g_loss_fn(disc_output, True, is_disc=False)
+        l_g_total += g_loss_fake
 
-            l_g_total.backward()
-            self.g_optimizer.step()
+        l_g_total.backward()
+        self.g_optimizer.step()
 
         # Update Discriminator
         for p in self.discriminator.parameters():
@@ -202,11 +202,12 @@ class TrainEpoch(Epoch):
         self.d_optimizer.zero_grad()
         
         disc_output=self.discriminator(y).squeeze(1).squeeze(1)
-        disc_output = torch.sigmoid(disc_output)  
+        #disc_output = torch.sigmoid(disc_output)  
         real_loss = self.d_loss_fn(disc_output, True, is_disc=True)
-        prediction_c = self.model(x) 
+        # prediction_a, prediction_b, prediction_c = self.model(x) 
+        prediction_a, prediction_b, prediction_c = self.model(x) 
         disc_output=self.discriminator(prediction_c).squeeze(1).squeeze(1)
-        disc_output = torch.sigmoid(disc_output)  
+        #disc_output = torch.sigmoid(disc_output)  
         fake_loss = self.d_loss_fn(disc_output,False,is_disc=True)
         gradient_penalty = compute_gradient_penalty(self.discriminator, y, prediction_c, self.device)
         d_loss = real_loss + fake_loss + self.gp_weight * gradient_penalty
@@ -228,14 +229,14 @@ class ValidEpoch(Epoch):
 
     def batch_update(self, x, y):
         with torch.no_grad():
-            prediction_c = self.model(x)
+            prediction_a, prediction_b, prediction_c = self.model(x)
 
             # pixel loss
             l_g_pix = self.loss(prediction_c, y)
 
             # gan loss
             disc_output=self.discriminator(prediction_c).squeeze(1).squeeze(1)
-            disc_output = torch.sigmoid(disc_output)  
+            #disc_output = torch.sigmoid(disc_output)  
             g_loss_fake = self.g_loss_fn(disc_output, True,is_disc=True)
 
             total_loss = l_g_pix + g_loss_fake
