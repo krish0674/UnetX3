@@ -37,7 +37,7 @@ def setup_optimizers(model, discriminator,lr):
 
 def train(epochs, batch_size, hr_dir, tar_dir, hr_val_dir, tar_val_dir, encoder='resnet34', encoder_weights='imagenet', device='cuda', lr=1e-4):
     
-    model = smp.Unet(
+    model = Unet(
     encoder_name=encoder,
     activation = 'tanh' ,
     encoder_depth=5,
