@@ -397,7 +397,7 @@ class Unet(SegmentationModel):
         #self.encoder2 = model1
 
         self.decoder = UnetDecoder(
-            encoder_channels=((3,16,32, 64, 128, 256)),
+            encoder_channels=((1,16,32, 64, 128, 256)),
             decoder_channels=decoder_channels,
             n_blocks=encoder_depth,
             use_batchnorm=decoder_use_batchnorm,
