@@ -42,6 +42,8 @@ def train(epochs, batch_size, hr_dir, tar_dir, hr_val_dir, tar_val_dir, encoder=
         activation=activation,
         encoder_name=encoder, 
         encoder_weights=encoder_weights, 
+        in_channels=1,
+        classes=1
     )
     discriminator=Discriminator().to(device) 
 
