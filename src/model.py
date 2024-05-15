@@ -6,6 +6,7 @@ from segmentation_models_pytorch.encoders import get_encoder
 from segmentation_models_pytorch.decoders.unet.decoder import UnetDecoder
 import segmentation_models_pytorch as smp 
 
+
 import torch
 import torch.nn as nn
 import math
@@ -159,33 +160,33 @@ class GhostNet(nn.Module):
                 m.weight.data.fill_(1)
                 m.bias.data.zero_()
 
-def ghost_net(**kwargs):
-    """
-    Constructs a MobileNetV3-Large model
-    """
-    cfgs = [
-        # k, t, c, SE, s 
-        [3,  16,  16, 0, 1],
-        [3,  48,  24, 0, 2],
-        [3,  72,  24, 0, 1],
-        [5,  72,  40, 1, 2],
-        [5, 120,  40, 1, 1],
-        [3, 240,  80, 0, 2],
-        [3, 200,  80, 0, 1],
-        [3, 184,  80, 0, 1],
-        [3, 184,  80, 0, 1],
-        [3, 480, 112, 1, 1],
-        [3, 672, 112, 1, 1],
-        [5, 672, 160, 1, 2],
-        [5, 960, 160, 0, 1],
-        [5, 960, 160, 1, 1],
-        [5, 960, 160, 0, 1],
-        [5, 960, 160, 1, 1]
-    ]
-    return GhostNet(cfgs, **kwargs)
+# def ghost_net(**kwargs):
+#     """
+#     Constructs a MobileNetV3-Large model
+#     """
+#     cfgs = [
+#         # k, t, c, SE, s 
+#         [3,  16,  16, 0, 1],
+#         [3,  48,  24, 0, 2],
+#         [3,  72,  24, 0, 1],
+#         [5,  72,  40, 1, 2],
+#         [5, 120,  40, 1, 1],
+#         [3, 240,  80, 0, 2],
+#         [3, 200,  80, 0, 1],
+#         [3, 184,  80, 0, 1],
+#         [3, 184,  80, 0, 1],
+#         [3, 480, 112, 1, 1],
+#         [3, 672, 112, 1, 1],
+#         [5, 672, 160, 1, 2],
+#         [5, 960, 160, 0, 1],
+#         [5, 960, 160, 1, 1],
+#         [5, 960, 160, 0, 1],
+#         [5, 960, 160, 1, 1]
+#     ]
+#     return GhostNet(cfgs, **kwargs)
 
 
-__all__ = ['ResNet', 'resnet32']
+# __all__ = ['ResNet', 'resnet32']
 def _weights_init(m):
     classname = m.__class__.__name__
     if isinstance(m, nn.Linear) or isinstance(m, nn.Conv2d):
@@ -237,8 +238,9 @@ class ResNet(nn.Module):
     def __init__(self, block, num_blocks, num_classes=10):
         super(ResNet, self).__init__()
         self.in_planes = 16
-
-        self.conv1 = GhostModule(3, 16, kernel_size=3, stride=1)
+        
+#         self.layer0 = self._make_layer(block, 3, num_blocks[0], stride=2)
+        self.conv1 = GhostModule(1, 16, kernel_size=3, stride=2)
         self.bn1 = nn.BatchNorm2d(16)
         self.layer1 = self._make_layer(block, 16, num_blocks[0], stride=1)
         self.layer2 = self._make_layer(block, 32, num_blocks[1], stride=2)
@@ -265,8 +267,6 @@ class ResNet(nn.Module):
         output.append(out)
         out = self.layer2(out)
         output.append(out)
-
-
         out = self.layer3(out)
         output.append(out)
 
@@ -279,14 +279,11 @@ class ResNet(nn.Module):
         return output
     
 def resnet32():
-    return ResNet(BasicBlock, [5, 5, 5, 5, 5])
-
-
+    return ResNet(BasicBlock, [10, 10, 10, 10, 10])
 
 
 
 model = resnet32() 
-model1 = resnet32() 
 
 def initialize_decoder(module):
     for m in module.modules():
@@ -342,17 +339,18 @@ class SegmentationModel(torch.nn.Module):
         self.check_input_shape(x)
 
         features = self.encoder(x)
-        if self.fusion == True:
-            features1 = self.encoder2(x)
+        # if self.fusion == True:
+        #     features1 = self.encoder2(x)
             
-            f1 = features[-1]
-            f2 = features1[-1]
+        #     f1 = features[-1]
+        #     #f2 = features1[-1]
             
-            for ind in range(len(features)):
-                # features[ind] = (features[ind]+features1[ind])/2
-                # features[ind] = features1[ind]
-                features[ind] = torch.maximum(features[ind],features1[ind])
-                # features[ind] = torch.cat((features[ind],features1[ind]),1)
+        for ind in range(len(features)):
+            features[ind]=features[ind]
+        #     #     # features[ind] = (features[ind]+features1[ind])/2
+        #     #     # features[ind] = features1[ind]
+        #     #     features[ind] = torch.maximum(features[ind],features1[ind])
+        #     #     # features[ind] = torch.cat((features[ind],features1[ind]),1)
     
         decoder_output = self.decoder(*features)
 
@@ -396,7 +394,7 @@ class Unet(SegmentationModel):
         super().__init__()
         self.fusion=fusion
         self.encoder = model
-        self.encoder2 = model1
+        #self.encoder2 = model1
 
         self.decoder = UnetDecoder(
             encoder_channels=((3,16,32, 64, 128, 256)),
@@ -417,6 +415,27 @@ class Unet(SegmentationModel):
 
         self.name = "u-{}".format(encoder_name)
         self.initialize()
+
+
+class Discriminator(nn.Module):
+    def __init__(self):
+        super(Discriminator, self).__init__()
+
+        self.model = nn.Sequential(
+            nn.Conv2d(3, 16, 3, stride=2, padding=1),  # Output: (224, 320)
+            nn.LeakyReLU(0.2),
+            nn.InstanceNorm2d(16, affine=True),
+            *discriminator_block(16, 32),  # Output: (112, 160)
+            *discriminator_block(32, 64),  # Output: (56, 80)
+            *discriminator_block(64, 128), # Output: (28, 40)
+            *discriminator_block(128, 128), # Output: (14, 20)
+            nn.Conv2d(128, 1, 13, padding=0),  # Output: (1, 7)
+            nn.AdaptiveAvgPool2d((1, 1))  # Output: (1, 1)
+        )
+
+    def forward(self, img_input):
+        return self.model(img_input)
+
 
 
 
