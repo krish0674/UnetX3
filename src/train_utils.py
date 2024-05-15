@@ -205,7 +205,7 @@ class TrainEpoch(Epoch):
         #disc_output = torch.sigmoid(disc_output)  
         real_loss = self.d_loss_fn(disc_output, True, is_disc=True)
         # prediction_a, prediction_b, prediction_c = self.model(x) 
-        prediction_a, prediction_b, prediction_c = self.model(x) 
+        prediction_c = self.model(x) 
         disc_output=self.discriminator(prediction_c).squeeze(1).squeeze(1)
         #disc_output = torch.sigmoid(disc_output)  
         fake_loss = self.d_loss_fn(disc_output,False,is_disc=True)
