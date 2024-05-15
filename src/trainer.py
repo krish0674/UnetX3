@@ -37,11 +37,12 @@ def setup_optimizers(model, discriminator,lr):
 
 def train(epochs, batch_size, hr_dir, tar_dir, hr_val_dir, tar_val_dir, encoder='resnet34', encoder_weights='imagenet', device='cuda', lr=1e-4):
     
-    model = UnetX3(
+    model = Unet(
     encoder_name=encoder,
     activation = 'tanh' ,
     encoder_weights='imagenet',
     input_channels=1, 
+    classes=1
 )
     discriminator=Discriminator().to(device) 
 

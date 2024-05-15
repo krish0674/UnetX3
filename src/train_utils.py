@@ -180,7 +180,7 @@ class TrainEpoch(Epoch):
         self.g_optimizer.zero_grad()
 
         # if (self.current_iter % self.net_d_iters == 0 and self.current_iter > self.net_d_init_iters):
-        prediction_a, prediction_b, prediction_c = self.model(x)
+        prediction_c = self.model(x)
 
         # pixel loss
         l_g_pix = self.loss(prediction_c, y)
@@ -229,7 +229,7 @@ class ValidEpoch(Epoch):
 
     def batch_update(self, x, y):
         with torch.no_grad():
-            prediction_a, prediction_b, prediction_c = self.model(x)
+            prediction_c = self.model(x)
 
             # pixel loss
             l_g_pix = self.loss(prediction_c, y)
