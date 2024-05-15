@@ -4,7 +4,7 @@ from .train_utils import TrainEpoch, ValidEpoch
 from .loss import custom_loss, custom_lossv,lossX3_mse,GANLoss,MSELoss
 from .dataloader import Dataset #,list_image_paths
 from .transformations import get_training_augmentation, get_validation_augmentation, get_preprocessing
-from .model import UnetX3,Discriminator,Unet
+from .model import Discriminator,Unet
 from torchmetrics import StructuralSimilarityIndexMeasure
 from torchmetrics import PeakSignalNoiseRatio
 import torch
